@@ -63,6 +63,23 @@ const {
   <body class="bg-primary text-secondary font-sans antialiased">
     <slot />
     <script>
+      // Scroll to top on every page load/refresh
+      history.scrollRestoration = 'manual';
+      window.scrollTo(0, 0);
+
+      // Intercept hash links — scroll smoothly without changing the URL
+      document.addEventListener('click', (e) => {
+        const a = (e.target as HTMLElement).closest('a[href^="#"]') as HTMLAnchorElement | null;
+        if (!a) return;
+        const id = a.getAttribute('href')!.slice(1);
+        if (!id) { e.preventDefault(); window.scrollTo({ top: 0, behavior: 'smooth' }); return; }
+        const target = document.getElementById(id);
+        if (!target) return;
+        e.preventDefault();
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+
+      // Scroll-triggered animations
       const observer = new IntersectionObserver((entries) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
