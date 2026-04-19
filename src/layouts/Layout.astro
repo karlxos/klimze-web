@@ -28,18 +28,53 @@ const {
     />
     <title>{title}</title>
     <style>
-      html {
-        scroll-behavior: smooth;
+      html { scroll-behavior: smooth; }
+      * { box-sizing: border-box; }
+
+      @keyframes fadeUp {
+        from { opacity: 0; transform: translateY(22px); }
+        to   { opacity: 1; transform: translateY(0); }
       }
-      * {
-        box-sizing: border-box;
+      @keyframes fadeIn {
+        from { opacity: 0; }
+        to   { opacity: 1; }
       }
-      .opacity-0 {
+
+      .animate-fade-up  { animation: fadeUp 0.7s cubic-bezier(0.16,1,0.3,1) forwards; }
+      .animate-fade-in  { animation: fadeIn 0.5s ease forwards; }
+      .opacity-0        { opacity: 0; }
+
+      /* Scroll-triggered */
+      [data-animate] {
         opacity: 0;
+        transform: translateY(22px);
+        transition: opacity 0.65s cubic-bezier(0.16,1,0.3,1),
+                    transform 0.65s cubic-bezier(0.16,1,0.3,1);
+      }
+      [data-animate="fade-in"] {
+        transform: none;
+      }
+      [data-animate].is-visible {
+        opacity: 1;
+        transform: translateY(0);
       }
     </style>
   </head>
   <body class="bg-primary text-secondary font-sans antialiased">
     <slot />
+    <script>
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            const el = entry.target as HTMLElement;
+            const delay = parseInt(el.dataset.animateDelay ?? '0');
+            setTimeout(() => el.classList.add('is-visible'), delay);
+            observer.unobserve(el);
+          }
+        });
+      }, { threshold: 0.12 });
+
+      document.querySelectorAll('[data-animate]').forEach((el) => observer.observe(el));
+    </script>
   </body>
 </html>
