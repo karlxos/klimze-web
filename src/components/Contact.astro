@@ -40,13 +40,9 @@
         <h3 class="text-primary font-bold text-xl mb-6">Solicita tu demo gratuita</h3>
 
         <form
-          name="demo-request"
-          method="POST"
-          action="/gracias"
-          data-netlify="true"
+          id="demo-form"
           class="flex flex-col gap-4"
         >
-          <input type="hidden" name="form-name" value="demo-request" />
 
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div class="flex flex-col gap-1.5">
@@ -139,3 +135,24 @@
     </div>
   </div>
 </section>
+
+<script>
+  document.getElementById('demo-form')?.addEventListener('submit', function (e) {
+    e.preventDefault();
+    const nombre = (document.getElementById('nombre') as HTMLInputElement).value;
+    const clinica = (document.getElementById('clinica') as HTMLInputElement).value;
+    const whatsapp = (document.getElementById('whatsapp') as HTMLInputElement).value;
+    const correo = (document.getElementById('correo') as HTMLInputElement).value;
+    const sedes = (document.getElementById('sedes') as HTMLSelectElement).value;
+
+    const mensaje =
+      `Hola Carlos, quiero una demo de klimze. 🙌\n\n` +
+      `👤 Nombre: ${nombre}\n` +
+      `🏥 Clínica: ${clinica}\n` +
+      `📱 WhatsApp: ${whatsapp}\n` +
+      `📧 Correo: ${correo}\n` +
+      `🏢 Sedes: ${sedes}`;
+
+    window.open(`https://wa.me/50765419867?text=${encodeURIComponent(mensaje)}`, '_blank');
+  });
+</script>
