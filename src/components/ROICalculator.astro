@@ -1,0 +1,241 @@
+---
+---
+
+<section id="calculadora" class="py-24 bg-primary relative overflow-hidden">
+  <!-- Section glow -->
+  <div
+    class="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-px pointer-events-none"
+    style="background: linear-gradient(90deg, transparent, rgba(147,225,216,0.3), transparent);"
+  ></div>
+  <!-- Center glow -->
+  <div
+    class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[400px] rounded-full pointer-events-none"
+    style="background: radial-gradient(ellipse at center, rgba(147,225,216,0.06) 0%, transparent 70%);"
+  ></div>
+
+  <div class="max-w-4xl mx-auto px-6 relative z-10">
+    <!-- Header -->
+    <div class="text-center mb-12">
+      <span class="text-tertiary text-sm font-semibold tracking-widest uppercase">Calculadora de pérdidas</span>
+      <h2 class="text-3xl sm:text-4xl md:text-5xl font-black text-secondary mt-3 mb-4">
+        Descubre cuánto dinero<br class="hidden sm:block" /> estás dejando ir cada mes
+      </h2>
+      <p class="text-secondary/50 text-lg max-w-xl mx-auto">
+        Tres datos. Treinta segundos. El número que cambia todo.
+      </p>
+    </div>
+
+    <!-- Calculator card -->
+    <div class="bg-[#0d0d0d] border border-secondary/10 rounded-3xl p-8 md:p-12 hover:border-tertiary/20 transition-all duration-500">
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
+
+        <!-- Left: Inputs -->
+        <div class="flex flex-col gap-7">
+
+          <!-- Input 1: Citas por semana -->
+          <div class="flex flex-col gap-2">
+            <label for="rc-citas" class="text-secondary/60 text-xs font-semibold uppercase tracking-widest">
+              Citas por semana
+            </label>
+            <div class="relative">
+              <input
+                type="number"
+                id="rc-citas"
+                min="1"
+                max="999"
+                value="100"
+                class="w-full bg-primary/60 border border-secondary/10 rounded-xl px-5 py-4 text-secondary text-2xl font-black focus:outline-none focus:border-tertiary/50 focus:ring-2 focus:ring-tertiary/10 transition-all duration-200 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+              />
+              <span class="absolute right-5 top-1/2 -translate-y-1/2 text-secondary/30 text-sm font-medium pointer-events-none">citas</span>
+            </div>
+          </div>
+
+          <!-- Input 2: Precio por consulta -->
+          <div class="flex flex-col gap-2">
+            <label for="rc-ticket" class="text-secondary/60 text-xs font-semibold uppercase tracking-widest">
+              ¿Cuánto cobras por cada cita? ($)
+            </label>
+            <div class="relative">
+              <span class="absolute left-5 top-1/2 -translate-y-1/2 text-secondary/40 text-2xl font-black pointer-events-none">$</span>
+              <input
+                type="number"
+                id="rc-ticket"
+                min="1"
+                max="99999"
+                value="30"
+                class="w-full bg-primary/60 border border-secondary/10 rounded-xl pl-10 pr-5 py-4 text-secondary text-2xl font-black focus:outline-none focus:border-tertiary/50 focus:ring-2 focus:ring-tertiary/10 transition-all duration-200 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+              />
+            </div>
+          </div>
+
+          <!-- Input 3: % pacientes que no llegan -->
+          <div class="flex flex-col gap-3">
+            <div class="flex items-center justify-between">
+              <label for="rc-pct" class="text-secondary/60 text-xs font-semibold uppercase tracking-widest">
+                ¿Cuántos pacientes no llegan a su cita? (%)
+              </label>
+              <span id="rc-pct-display" class="text-tertiary font-black text-xl tabular-nums">20%</span>
+            </div>
+            <input
+              type="range"
+              id="rc-pct"
+              min="0"
+              max="60"
+              step="5"
+              value="20"
+              class="rc-range w-full h-1.5 rounded-full appearance-none cursor-pointer"
+            />
+            <div class="flex justify-between text-secondary/20 text-xs">
+              <span>0%</span>
+              <span>30%</span>
+              <span>60%</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: Result display -->
+        <div class="flex flex-col gap-6">
+          <!-- Result box -->
+          <div class="bg-primary/80 border border-tertiary/20 rounded-2xl p-8 text-center relative overflow-hidden">
+            <!-- Glow inside result box -->
+            <div
+              class="absolute inset-0 pointer-events-none"
+              style="background: radial-gradient(ellipse at 50% 0%, rgba(147,225,216,0.08) 0%, transparent 70%);"
+            ></div>
+
+            <p class="text-secondary/40 text-xs font-semibold uppercase tracking-widest mb-3 relative z-10">
+              Estás perdiendo aproximadamente
+            </p>
+            <div id="rc-result-mes" class="text-5xl md:text-6xl font-black text-tertiary tabular-nums mb-1 transition-all duration-300 relative z-10">
+              $2,580
+            </div>
+            <p class="text-secondary/40 text-sm relative z-10">al mes</p>
+
+            <div class="border-t border-secondary/10 my-5 relative z-10"></div>
+
+            <p class="text-secondary/30 text-xs mb-1 relative z-10">En un año pierdes</p>
+            <div id="rc-result-anio" class="text-2xl font-black text-secondary/60 tabular-nums relative z-10">
+              $30,960
+            </div>
+          </div>
+
+          <!-- Insight -->
+          <p class="text-secondary/40 text-sm text-center leading-relaxed">
+            La mayoría de clínicas recupera el <span class="text-tertiary font-semibold">60–80%</span> de estas pérdidas
+            en los primeros 90 días con klimze.
+          </p>
+
+          <!-- CTA -->
+          <a
+            href="#contacto"
+            class="block text-center bg-tertiary text-primary font-bold px-8 py-4 rounded-full hover:bg-tertiary/90 hover:scale-[1.02] transition-all duration-200 shadow-lg shadow-tertiary/20"
+          >
+            Ver cómo klimze. lo recupera →
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footnote -->
+    <p class="text-center text-secondary/20 text-xs mt-6">
+      Cálculo basado en: citas/semana × % de pacientes que no llegan × precio por cita × 4.3 semanas. Estimación conservadora para clínicas en LATAM.
+    </p>
+  </div>
+</section>
+
+<style>
+  /* Range slider track */
+  .rc-range {
+    background: linear-gradient(
+      to right,
+      #93E1D8 0%,
+      #93E1D8 var(--range-pct, 33%),
+      rgba(245, 237, 240, 0.1) var(--range-pct, 33%),
+      rgba(245, 237, 240, 0.1) 100%
+    );
+  }
+  .rc-range::-webkit-slider-thumb {
+    appearance: none;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: #93E1D8;
+    border: 3px solid #020202;
+    box-shadow: 0 0 0 2px rgba(147, 225, 216, 0.4);
+    cursor: pointer;
+    transition: box-shadow 0.2s;
+  }
+  .rc-range::-webkit-slider-thumb:hover {
+    box-shadow: 0 0 0 4px rgba(147, 225, 216, 0.25);
+  }
+  .rc-range::-moz-range-thumb {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: #93E1D8;
+    border: 3px solid #020202;
+    box-shadow: 0 0 0 2px rgba(147, 225, 216, 0.4);
+    cursor: pointer;
+  }
+
+  /* Pulse animation on result update */
+  @keyframes resultPulse {
+    0%   { color: #F5EDF0; }
+    50%  { color: #93E1D8; }
+    100% { color: #93E1D8; }
+  }
+  .result-pulse {
+    animation: resultPulse 0.4s ease-out forwards;
+  }
+</style>
+
+<script>
+  const citasEl   = document.getElementById('rc-citas')   as HTMLInputElement | null;
+  const ticketEl  = document.getElementById('rc-ticket')  as HTMLInputElement | null;
+  const pctEl     = document.getElementById('rc-pct')     as HTMLInputElement | null;
+  const pctDisplay = document.getElementById('rc-pct-display');
+  const resMes    = document.getElementById('rc-result-mes');
+  const resAnio   = document.getElementById('rc-result-anio');
+
+  function fmt(n: number): string {
+    return '$' + Math.round(n).toLocaleString('es');
+  }
+
+  function updateRange() {
+    if (!pctEl) return;
+    const val = parseFloat(pctEl.value);
+    const max = parseFloat(pctEl.max) || 60;
+    const pct = (val / max) * 100;
+    pctEl.style.setProperty('--range-pct', pct + '%');
+  }
+
+  function calcular() {
+    if (!citasEl || !ticketEl || !pctEl || !resMes || !resAnio || !pctDisplay) return;
+
+    const citas  = parseFloat(citasEl.value)  || 0;
+    const ticket = parseFloat(ticketEl.value) || 0;
+    const pct    = parseFloat(pctEl.value)    || 0;
+
+    pctDisplay.textContent = pct + '%';
+    updateRange();
+
+    const mes  = citas * (pct / 100) * ticket * 4.3;
+    const anio = mes * 12;
+
+    // Pulse effect
+    resMes.classList.remove('result-pulse');
+    void (resMes as HTMLElement).offsetWidth;
+    resMes.classList.add('result-pulse');
+
+    resMes.textContent  = fmt(mes);
+    resAnio.textContent = fmt(anio);
+  }
+
+  citasEl?.addEventListener('input',  calcular);
+  ticketEl?.addEventListener('input', calcular);
+  pctEl?.addEventListener('input',    calcular);
+
+  // Init
+  updateRange();
+  calcular();
+</script>

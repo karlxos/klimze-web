@@ -1,0 +1,45 @@
+---
+interface Props {
+  title?: string;
+  description?: string;
+}
+
+const {
+  title = 'klimze. — Automatiza tu clínica con WhatsApp',
+  description = 'klimze. convierte cada mensaje de WhatsApp en una cita confirmada. Automatiza la atención, el agendamiento y la reactivación de pacientes — sin intervención humana.',
+} = Astro.props;
+---
+
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content={description} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content="website" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
+      rel="stylesheet"
+    />
+    <title>{title}</title>
+    <style>
+      html {
+        scroll-behavior: smooth;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      .opacity-0 {
+        opacity: 0;
+      }
+    </style>
+  </head>
+  <body class="bg-primary text-secondary font-sans antialiased">
+    <slot />
+  </body>
+</html>

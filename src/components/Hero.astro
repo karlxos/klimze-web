@@ -1,0 +1,83 @@
+---
+---
+
+<section class="relative min-h-screen flex items-center justify-center overflow-hidden bg-primary pt-20">
+  <!-- Background glow -->
+  <div
+    class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full pointer-events-none"
+    style="background: radial-gradient(ellipse at center, rgba(147,225,216,0.12) 0%, transparent 70%);"
+  ></div>
+
+  <div class="relative z-10 max-w-5xl mx-auto px-6 text-center pb-20">
+    <!-- Tag -->
+    <div class="inline-flex items-center gap-2 bg-tertiary/10 border border-tertiary/30 rounded-full px-4 py-1.5 mb-8 animate-fade-in">
+      <span class="w-2 h-2 rounded-full bg-tertiary animate-pulse"></span>
+      <span class="text-tertiary text-sm font-medium">El sistema que trabaja por tu clínica 24/7</span>
+    </div>
+
+    <!-- Headline — pain-first -->
+    <h1
+      class="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black text-secondary leading-tight mb-6 opacity-0 animate-fade-up"
+      style="animation-delay: 0.15s; animation-fill-mode: forwards;"
+    >
+      Tu clínica pierde dinero<br />
+      cada semana.<br />
+      <span class="text-tertiary">¿Ya calculaste cuánto?</span>
+    </h1>
+
+    <!-- Subheadline -->
+    <p
+      class="text-secondary/60 text-lg md:text-xl max-w-2xl mx-auto mb-10 opacity-0 animate-fade-up"
+      style="animation-delay: 0.3s; animation-fill-mode: forwards;"
+    >
+      Los pacientes que no llegan, las llamadas sin respuesta y los clientes que nunca vuelven
+      cuestan más de lo que imaginas. klimze. lo automatiza todo — y te muestra los números.
+    </p>
+
+    <!-- CTAs -->
+    <div
+      class="flex flex-col sm:flex-row items-center justify-center gap-4 opacity-0 animate-fade-up"
+      style="animation-delay: 0.45s; animation-fill-mode: forwards;"
+    >
+      <a
+        href="#calculadora"
+        class="bg-tertiary text-primary font-bold px-8 py-4 rounded-full text-base hover:bg-tertiary/90 hover:scale-105 transition-all duration-200 shadow-lg shadow-tertiary/20"
+      >
+        Calcular cuánto pierdo →
+      </a>
+      <a
+        href="#funcionalidades"
+        class="border border-secondary/20 text-secondary font-semibold px-8 py-4 rounded-full text-base hover:border-tertiary hover:text-tertiary transition-all duration-200"
+      >
+        Ver funcionalidades
+      </a>
+    </div>
+
+    <!-- Stats — outcome-focused -->
+    <div
+      class="mt-16 grid grid-cols-3 gap-6 max-w-lg mx-auto opacity-0 animate-fade-up"
+      style="animation-delay: 0.6s; animation-fill-mode: forwards;"
+    >
+      <div class="text-center">
+        <div class="text-2xl font-black text-tertiary">−70%</div>
+        <div class="text-secondary/50 text-xs mt-1">Citas perdidas</div>
+      </div>
+      <div class="border-x border-secondary/10 text-center">
+        <div class="text-2xl font-black text-tertiary">24/7</div>
+        <div class="text-secondary/50 text-xs mt-1">Atención automática</div>
+      </div>
+      <div class="text-center">
+        <div class="text-2xl font-black text-tertiary">$4,200</div>
+        <div class="text-secondary/50 text-xs mt-1">Recuperados/mes avg.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scroll indicator -->
+  <div class="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 opacity-40">
+    <span class="text-secondary text-xs">Descubre cuánto pierdes</span>
+    <div class="w-px h-8 bg-secondary/30 relative overflow-hidden">
+      <div class="absolute top-0 left-0 w-full h-1/2 bg-tertiary animate-bounce"></div>
+    </div>
+  </div>
+</section>

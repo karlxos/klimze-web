@@ -1,0 +1,132 @@
+---
+---
+
+<canvas
+  id="stars-canvas"
+  class="fixed inset-0 pointer-events-none z-[60]"
+  style="background: transparent; mix-blend-mode: difference;"
+></canvas>
+
+<script>
+  const canvas = document.getElementById('stars-canvas') as HTMLCanvasElement;
+  const ctx = canvas.getContext('2d')!;
+
+  const resize = () => {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+  };
+  resize();
+  window.addEventListener('resize', resize);
+
+  interface Star {
+    x: number;   // origin X relative to center
+    y: number;   // origin Y relative to center
+    z: number;   // depth: starts far (large), rushes to 0
+    pz: number;  // previous z for trail
+    speed: number;
+    twinklePhase: number;
+    twinkleSpeed: number;
+  }
+
+  const STAR_COUNT = 320;
+  const stars: Star[] = [];
+
+  const spawnStar = (): Star => {
+    const angle = Math.random() * Math.PI * 2;
+    const dist  = Math.random() * 0.5 + 0.05; // normalized distance from center
+    const hw = canvas.width  / 2;
+    const hh = canvas.height / 2;
+    const radius = Math.max(hw, hh) * dist;
+    return {
+      x: Math.cos(angle) * radius,
+      y: Math.sin(angle) * radius,
+      z: Math.random() * 900 + 100,
+      pz: 0,
+      speed: Math.random() * 1.75 + 0.75,
+      twinklePhase: Math.random() * Math.PI * 2,
+      twinkleSpeed: Math.random() * 0.06 + 0.02,
+    };
+  };
+
+  // Spread initial z so they don't all rush in at once
+  for (let i = 0; i < STAR_COUNT; i++) {
+    const s = spawnStar();
+    s.z  = Math.random() * 900 + 50;
+    s.pz = s.z;
+    stars.push(s);
+  }
+
+  const project = (x: number, y: number, z: number) => {
+    const fov = 500;
+    const hw  = canvas.width  / 2;
+    const hh  = canvas.height / 2;
+    const scale = fov / z;
+    return { px: x * scale + hw, py: y * scale + hh, scale };
+  };
+
+  const drawStar = (s: Star) => {
+    const cur  = project(s.x, s.y, s.z);
+    const prev = project(s.x, s.y, s.pz);
+
+    if (cur.px < -20 || cur.px > canvas.width + 20 ||
+        cur.py < -20 || cur.py > canvas.height + 20) return;
+
+    s.twinklePhase += s.twinkleSpeed;
+    const twinkle = 1 + Math.sin(s.twinklePhase) * 0.25;
+    const radius  = Math.max(cur.scale * 0.7 * twinkle, 0.2);
+    const opacity = Math.min(cur.scale * 1.4, 0.85);
+
+    // Trail line from previous position to current
+    const trailLen = Math.hypot(cur.px - prev.px, cur.py - prev.py);
+    if (trailLen > 1.2) {
+      const grad = ctx.createLinearGradient(prev.px, prev.py, cur.px, cur.py);
+      grad.addColorStop(0, 'rgba(255,255,255,0)');
+      grad.addColorStop(1, `rgba(255,255,255,${opacity * 0.6})`);
+      ctx.beginPath();
+      ctx.moveTo(prev.px, prev.py);
+      ctx.lineTo(cur.px, cur.py);
+      ctx.strokeStyle = grad;
+      ctx.lineWidth   = radius * 0.7;
+      ctx.stroke();
+    }
+
+    // Glow halo for closer stars
+    if (radius > 0.6) {
+      const grd = ctx.createRadialGradient(cur.px, cur.py, 0, cur.px, cur.py, radius * 4);
+      grd.addColorStop(0, `rgba(255,255,255,${opacity * 0.2})`);
+      grd.addColorStop(1, 'rgba(255,255,255,0)');
+      ctx.beginPath();
+      ctx.arc(cur.px, cur.py, radius * 4, 0, Math.PI * 2);
+      ctx.fillStyle = grd;
+      ctx.fill();
+    }
+
+    // Core dot
+    ctx.beginPath();
+    ctx.arc(cur.px, cur.py, radius, 0, Math.PI * 2);
+    ctx.fillStyle = `rgba(255,255,255,${opacity})`;
+    ctx.fill();
+  };
+
+  const updateStar = (s: Star) => {
+    s.pz  = s.z;
+    s.z  -= s.speed;
+
+    if (s.z <= 1) {
+      Object.assign(s, spawnStar());
+      s.z  = 900 + Math.random() * 100;
+      s.pz = s.z;
+    }
+  };
+
+  const animate = () => {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    for (const s of stars) {
+      updateStar(s);
+      drawStar(s);
+    }
+    requestAnimationFrame(animate);
+  };
+
+  animate();
+</script>
