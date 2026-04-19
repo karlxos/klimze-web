@@ -5,9 +5,12 @@ interface Props {
 }
 
 const {
-  title = 'klimze. | Automatiza tu clínica',
-  description = 'klimze. convierte cada mensaje de WhatsApp en una cita confirmada. Automatiza la atención, el agendamiento y la reactivación de pacientes — sin intervención humana.',
+  title = 'klimze. — Automatiza citas de tu clínica por WhatsApp | Panamá y LATAM',
+  description = 'klimze. automatiza el agendamiento de citas médicas por WhatsApp 24/7. Chatbot inteligente para clínicas en Panamá y Latinoamérica. Reduce citas perdidas un 70%. Prueba gratis 30 días.',
 } = Astro.props;
+
+const canonicalURL = 'https://klimze.app/';
+const ogImage = 'https://klimze.app/og-image.png';
 ---
 
 <!doctype html>
@@ -15,18 +18,182 @@ const {
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- SEO primario -->
+    <title>{title}</title>
     <meta name="description" content={description} />
+    <link rel="canonical" href={canonicalURL} />
+    <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={canonicalURL} />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
-    <meta property="og:type" content="website" />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="klimze. — Sistema de automatización de citas para clínicas por WhatsApp" />
+    <meta property="og:locale" content="es_PA" />
+    <meta property="og:locale:alternate" content="es_MX" />
+    <meta property="og:locale:alternate" content="es_CO" />
+    <meta property="og:site_name" content="klimze." />
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImage} />
+    <meta name="twitter:image:alt" content="klimze. — Automatización de citas médicas por WhatsApp" />
+
+    <!-- Favicon -->
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="shortcut icon" href="/favicon.ico" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+
+    <!-- Sitemap -->
+    <link rel="sitemap" href="/sitemap.xml" />
+
+    <!-- Fuentes — preconnect antes del stylesheet para LCP -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
       href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
       rel="stylesheet"
     />
-    <title>{title}</title>
+
+    <!-- Schema.org — SoftwareApplication + Organization -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "SoftwareApplication",
+            "@id": "https://klimze.app/#software",
+            "name": "klimze.",
+            "url": "https://klimze.app/",
+            "description": "Sistema SaaS para automatizar citas médicas por WhatsApp. Chatbot inteligente, agendamiento 24/7, recordatorios automáticos y reactivación de pacientes para clínicas en Panamá y Latinoamérica.",
+            "applicationCategory": "BusinessApplication",
+            "operatingSystem": "Web, iOS, Android",
+            "offers": [
+              {
+                "@type": "Offer",
+                "name": "Plan Básico",
+                "price": "89",
+                "priceCurrency": "USD",
+                "priceSpecification": {
+                  "@type": "UnitPriceSpecification",
+                  "price": "89",
+                  "priceCurrency": "USD",
+                  "unitText": "MONTH"
+                }
+              },
+              {
+                "@type": "Offer",
+                "name": "Plan Pro",
+                "price": "149",
+                "priceCurrency": "USD",
+                "priceSpecification": {
+                  "@type": "UnitPriceSpecification",
+                  "price": "149",
+                  "priceCurrency": "USD",
+                  "unitText": "MONTH"
+                }
+              }
+            ],
+            "featureList": [
+              "Chatbot de WhatsApp 24/7 para clínicas",
+              "Agendamiento automático de citas médicas",
+              "Recordatorios automáticos de citas",
+              "Reactivación de pacientes inactivos",
+              "Generación automática de reseñas",
+              "CRM de pacientes integrado",
+              "Dashboard de rendimiento en tiempo real"
+            ],
+            "screenshot": "https://klimze.app/og-image.png",
+            "softwareVersion": "1.0",
+            "inLanguage": "es"
+          },
+          {
+            "@type": "Organization",
+            "@id": "https://klimze.app/#organization",
+            "name": "klimze.",
+            "url": "https://klimze.app/",
+            "logo": {
+              "@type": "ImageObject",
+              "url": "https://klimze.app/favicon.svg"
+            },
+            "description": "Plataforma SaaS para automatización de clínicas médicas vía WhatsApp en Latinoamérica.",
+            "areaServed": [
+              { "@type": "Country", "name": "Panamá" },
+              { "@type": "Country", "name": "México" },
+              { "@type": "Country", "name": "Colombia" },
+              { "@type": "Country", "name": "Costa Rica" }
+            ],
+            "contactPoint": {
+              "@type": "ContactPoint",
+              "contactType": "sales",
+              "availableLanguage": "Spanish"
+            }
+          },
+          {
+            "@type": "WebSite",
+            "@id": "https://klimze.app/#website",
+            "url": "https://klimze.app/",
+            "name": "klimze.",
+            "description": "Sistema de automatización de citas médicas por WhatsApp para clínicas en Panamá y LATAM",
+            "inLanguage": "es",
+            "publisher": { "@id": "https://klimze.app/#organization" }
+          },
+          {
+            "@type": "FAQPage",
+            "@id": "https://klimze.app/#faq",
+            "mainEntity": [
+              {
+                "@type": "Question",
+                "name": "¿Cómo automatiza klimze. las citas de mi clínica?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "klimze. instala un chatbot inteligente en el número de WhatsApp de tu clínica. Cuando un paciente escribe, el bot responde automáticamente, consulta disponibilidad en tiempo real y confirma la cita — sin intervención humana, las 24 horas del día."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "¿Cuánto cuesta klimze.?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "klimze. tiene dos planes: Plan Básico desde $89/mes (hasta 200 citas/mes, 1 sede) y Plan Pro desde $149/mes (citas ilimitadas, 1-2 sedes, reactivación de pacientes y más). Hay una prueba gratuita de 30 días sin tarjeta de crédito."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "¿klimze. funciona en Panamá y otros países de Latinoamérica?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Sí. klimze. está diseñado para clínicas en Panamá, México, Colombia, Costa Rica y toda Latinoamérica. El sistema funciona con cualquier número de WhatsApp Business de la región."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "¿Cuánto tiempo tarda en configurarse?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "La configuración inicial tarda menos de 24 horas. El equipo de klimze. realiza el onboarding completo: conecta tu WhatsApp, carga tus servicios, horarios y doctores, y deja el sistema funcionando desde el primer día."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "¿Qué pasa si el chatbot no puede responder algo?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Cuando el bot detecta una consulta que no puede resolver, envía una alerta al dashboard de la clínica para que un humano tome la conversación. También puedes devolver la conversación al bot en cualquier momento con un clic."
+                }
+              }
+            ]
+          }
+        ]
+      }
+    </script>
     <style>
       html { scroll-behavior: smooth; }
       * { box-sizing: border-box; }

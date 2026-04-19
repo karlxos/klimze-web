@@ -63,25 +63,25 @@ const features = [
   <div class="max-w-7xl mx-auto px-6">
     <!-- Header -->
     <div class="text-center mb-16" data-animate>
-      <span class="text-tertiary text-sm font-semibold tracking-widest uppercase">Funcionalidades</span>
+      <span class="text-tertiary text-sm font-semibold tracking-widest uppercase">Sistema de automatización para clínicas</span>
       <h2 class="text-3xl sm:text-4xl md:text-5xl font-black text-secondary mt-3 mb-4">
         Todo lo que tu clínica necesita,<br class="hidden sm:block" /> automatizado
       </h2>
       <p class="text-secondary/50 text-lg max-w-xl mx-auto">
-        Desde la primera consulta hasta fidelizar al paciente, klimze. lo hace solo.
+        Desde el primer mensaje de WhatsApp hasta fidelizar al paciente, klimze. lo gestiona solo — sin intervención humana.
       </p>
     </div>
 
     <!-- Feature grid -->
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
       {features.map((f, i) => (
-        <div
+        <article
           data-animate
           data-animate-delay={i * 60}
           class="group relative bg-[#0d0d0d] border border-secondary/5 rounded-2xl p-6 hover:border-tertiary/40 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:shadow-tertiary/5 cursor-default"
         >
           <!-- Icon -->
-          <div class="text-tertiary mb-4 group-hover:scale-110 transition-transform duration-300">
+          <div class="text-tertiary mb-4 group-hover:scale-110 transition-transform duration-300" aria-hidden="true">
             <Fragment set:html={f.icon} />
           </div>
           <!-- Title -->
@@ -90,8 +90,8 @@ const features = [
           <p class="text-secondary/40 text-xs leading-relaxed">{f.desc}</p>
 
           <!-- Hover accent line -->
-          <div class="absolute bottom-0 left-6 right-6 h-px bg-tertiary scale-x-0 group-hover:scale-x-100 transition-transform duration-300 rounded-full"></div>
-        </div>
+          <div class="absolute bottom-0 left-6 right-6 h-px bg-tertiary scale-x-0 group-hover:scale-x-100 transition-transform duration-300 rounded-full" aria-hidden="true"></div>
+        </article>
       ))}
     </div>
   </div>
