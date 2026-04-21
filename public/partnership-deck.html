@@ -1,0 +1,1109 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Partnership — Automatizaciones con IA</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #6366F1;
+            --primary-light: #818CF8;
+            --accent: #10B981;
+            --accent-dark: #059669;
+            --amber: #F59E0B;
+            --bg: #080810;
+            --bg-card: rgba(255,255,255,0.04);
+            --bg-card-hover: rgba(255,255,255,0.07);
+            --border: rgba(255,255,255,0.08);
+            --text: #F1F5F9;
+            --text-muted: rgba(241,245,249,0.55);
+            --gradient-primary: linear-gradient(135deg, #6366F1, #8B5CF6);
+            --gradient-green: linear-gradient(135deg, #10B981, #34D399);
+            --gradient-amber: linear-gradient(135deg, #F59E0B, #FBBF24);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'Inter', sans-serif;
+            overflow: hidden;
+            height: 100vh;
+        }
+
+        /* 16:9 container */
+        .slide-deck {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        @media (min-width: 769px) {
+            .slide-deck {
+                max-width: calc(100vh * 16 / 9);
+                max-height: calc(100vw * 9 / 16);
+                margin: auto;
+                position: absolute;
+                inset: 0;
+            }
+        }
+
+        .slide {
+            position: absolute;
+            width: 100%; height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 56px 72px;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.4s ease;
+            overflow: hidden;
+        }
+
+        .slide.active { opacity: 1; visibility: visible; }
+
+        .slide-content {
+            width: 100%;
+            max-width: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+        }
+
+        /* Typography */
+        h1, h2, h3 { font-family: 'Space Grotesk', sans-serif; }
+
+        .slide-title {
+            font-size: clamp(36px, 5.5vw, 72px);
+            font-weight: 800;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            line-height: 1.1;
+            letter-spacing: -1px;
+        }
+
+        .slide-subtitle {
+            font-size: clamp(16px, 2vw, 22px);
+            color: var(--text-muted);
+            font-weight: 400;
+            max-width: 700px;
+            line-height: 1.6;
+            text-align: center;
+        }
+
+        .label {
+            font-size: 12px;
+            font-weight: 600;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--primary-light);
+            background: rgba(99,102,241,0.12);
+            padding: 6px 16px;
+            border-radius: 100px;
+            border: 1px solid rgba(99,102,241,0.25);
+        }
+
+        .label-neon {
+            border-color: rgba(99,102,241,0.6);
+            box-shadow: 0 0 8px rgba(99,102,241,0.5), 0 0 20px rgba(99,102,241,0.25), inset 0 0 8px rgba(99,102,241,0.08);
+        }
+
+        /* Cards */
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 24px;
+        }
+
+        /* Grids */
+        .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            width: 100%;
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 24px;
+            width: 100%;
+        }
+
+        .grid-4 {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            width: 100%;
+        }
+
+        /* Background effects */
+        .bg-glow {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.12;
+            pointer-events: none;
+        }
+
+        /* Animations */
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(24px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes scaleIn {
+            from { opacity: 0; transform: scale(0.93); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.04); }
+        }
+
+        .slide.active .animate-1 { animation: fadeUp 0.5s ease 0.1s both; }
+        .slide.active .animate-2 { animation: fadeUp 0.5s ease 0.2s both; }
+        .slide.active .animate-3 { animation: fadeUp 0.5s ease 0.3s both; }
+        .slide.active .animate-4 { animation: fadeUp 0.5s ease 0.4s both; }
+        .slide.active .animate-5 { animation: fadeUp 0.5s ease 0.5s both; }
+        .slide.active .animate-scale { animation: scaleIn 0.6s ease 0.15s both; }
+
+        /* Navigation */
+        .progress-bar {
+            position: fixed;
+            top: 0; left: 0;
+            height: 3px;
+            background: var(--gradient-primary);
+            transition: width 0.35s ease;
+            z-index: 1000;
+        }
+
+        .nav-controls {
+            position: fixed;
+            bottom: 24px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            z-index: 1000;
+            background: rgba(8,8,16,0.8);
+            backdrop-filter: blur(12px);
+            padding: 8px 20px;
+            border-radius: 100px;
+            border: 1px solid var(--border);
+        }
+
+        .nav-btn {
+            background: transparent;
+            border: none;
+            color: var(--text);
+            width: 36px; height: 36px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 16px;
+            display: flex; align-items: center; justify-content: center;
+            transition: background 0.2s;
+        }
+        .nav-btn:hover { background: rgba(255,255,255,0.1); }
+        .slide-counter { color: var(--text-muted); font-size: 13px; font-family: 'Inter', sans-serif; }
+
+        /* ===== SLIDE 1: COVER ===== */
+        .slide-1 { text-align: center; }
+        .slide-1 .bg-glow-1 {
+            width: 500px; height: 500px;
+            background: var(--primary);
+            top: -100px; left: -100px;
+        }
+        .slide-1 .bg-glow-2 {
+            width: 400px; height: 400px;
+            background: var(--accent);
+            bottom: -100px; right: -100px;
+        }
+        .badge-row {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            justify-content: center;
+        }
+        .badge {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(255,255,255,0.06);
+            border: 1px solid var(--border);
+            padding: 6px 14px;
+            border-radius: 100px;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+        .badge-dot {
+            width: 7px; height: 7px;
+            border-radius: 50%;
+            background: var(--accent);
+        }
+
+        /* ===== SLIDE 2: PROBLEM ===== */
+        .problem-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 20px 24px;
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            text-align: left;
+        }
+        .problem-icon {
+            font-size: 28px;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+        .problem-card h3 {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text);
+            margin-bottom: 6px;
+        }
+        .problem-card p {
+            font-size: 14px;
+            color: var(--text-muted);
+            line-height: 1.5;
+        }
+
+        /* ===== SLIDE 3: SOLUTION ===== */
+        .solution-card {
+            background: var(--bg-card);
+            border: 1px solid rgba(99,102,241,0.2);
+            border-radius: 16px;
+            padding: 24px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+        .solution-card .icon-wrap {
+            width: 52px; height: 52px;
+            border-radius: 14px;
+            background: rgba(99,102,241,0.15);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 24px;
+        }
+        .solution-card h3 {
+            font-size: 15px;
+            font-weight: 600;
+        }
+        .solution-card p {
+            font-size: 13px;
+            color: var(--text-muted);
+            line-height: 1.5;
+        }
+
+        /* ===== SLIDE 4: HOW IT WORKS ===== */
+        .flow-step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+            position: relative;
+            padding: 0 10px;
+        }
+        .flow-number {
+            width: 44px; height: 44px;
+            border-radius: 50%;
+            background: var(--gradient-primary);
+            display: flex; align-items: center; justify-content: center;
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 700;
+            font-size: 18px;
+        }
+        .flow-body {
+            text-align: center;
+        }
+        .flow-body h3 {
+            font-size: 15px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+        .flow-body p {
+            font-size: 13px;
+            color: var(--text-muted);
+            line-height: 1.4;
+        }
+        .flow-arrow {
+            position: absolute;
+            right: -32px;
+            top: 11px;
+            color: var(--primary-light);
+            font-size: 20px;
+            opacity: 0.5;
+        }
+        .flow-wrapper {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 0;
+            width: 100%;
+            position: relative;
+        }
+
+        /* ===== SLIDE 5: PRICING ===== */
+        .pricing-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+        .pricing-table th {
+            font-size: 12px;
+            font-weight: 600;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            padding: 10px 16px;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+        .pricing-table td {
+            padding: 11px 16px;
+            border-bottom: 1px solid rgba(255,255,255,0.04);
+            vertical-align: middle;
+        }
+        .pricing-table tr:last-child td { border-bottom: none; }
+        .pricing-table tr:hover td { background: rgba(255,255,255,0.03); }
+        .pkg-name { font-weight: 600; font-size: 14px; }
+        .pkg-emoji { font-size: 18px; margin-right: 8px; }
+        .price-setup {
+            font-weight: 700;
+            font-family: 'Space Grotesk', sans-serif;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .price-setup::after {
+            content: ' aprox.';
+            font-size: 11px;
+            font-weight: 500;
+            background: none;
+            -webkit-text-fill-color: var(--text-muted);
+            color: var(--text-muted);
+        }
+        .price-monthly {
+            font-weight: 600;
+            color: var(--accent);
+            font-family: 'Space Grotesk', sans-serif;
+        }
+        .days-badge {
+            background: rgba(255,255,255,0.06);
+            border-radius: 6px;
+            padding: 3px 10px;
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        /* ===== SLIDE 6: COMMISSIONS ===== */
+        .commission-big {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: clamp(48px, 7vw, 96px);
+            font-weight: 800;
+            background: var(--gradient-green);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            line-height: 1;
+        }
+        .commission-example {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 20px 24px;
+            text-align: left;
+        }
+        .commission-example h4 {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-size: 11px;
+        }
+        .commission-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            font-size: 14px;
+        }
+        .commission-row:last-child { border-bottom: none; padding-bottom: 0; }
+        .commission-row .amount {
+            font-weight: 700;
+            font-family: 'Space Grotesk', sans-serif;
+            color: var(--accent);
+        }
+        .total-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid var(--border);
+        }
+        .total-row .label { font-weight: 700; font-size: 14px; }
+        .total-row .amount {
+            font-size: 22px;
+            font-weight: 800;
+            font-family: 'Space Grotesk', sans-serif;
+            background: var(--gradient-green);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* ===== SLIDE 7: WHY US ===== */
+        .why-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 22px;
+            display: flex;
+            gap: 16px;
+            text-align: left;
+        }
+        .why-icon {
+            font-size: 30px;
+            flex-shrink: 0;
+        }
+        .why-card h3 {
+            font-size: 15px;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        .why-card p {
+            font-size: 13px;
+            color: var(--text-muted);
+            line-height: 1.5;
+        }
+
+        /* ===== SLIDE 8: CTA ===== */
+        .cta-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: var(--gradient-primary);
+            color: white;
+            padding: 16px 36px;
+            border-radius: 100px;
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 700;
+            font-size: 18px;
+            text-decoration: none;
+            border: none;
+            cursor: pointer;
+            animation: pulse 2.5s ease-in-out infinite;
+        }
+        .step-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            width: 100%;
+            max-width: 520px;
+        }
+        .step-item {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 14px 20px;
+        }
+        .step-num {
+            width: 32px; height: 32px;
+            border-radius: 50%;
+            background: rgba(99,102,241,0.15);
+            border: 1px solid rgba(99,102,241,0.3);
+            display: flex; align-items: center; justify-content: center;
+            font-weight: 700;
+            font-size: 14px;
+            color: var(--primary-light);
+            flex-shrink: 0;
+        }
+        .step-item p { font-size: 14px; color: var(--text-muted); }
+        .step-item strong { color: var(--text); }
+
+        @media (max-width: 768px) {
+            /* Reset body to allow scroll on mobile */
+            body { overflow-y: auto; height: auto; }
+
+            /* Stack slides vertically — hide inactive */
+            .slide-deck { position: relative; height: auto; overflow: visible; }
+            .slide {
+                position: relative;
+                width: 100%;
+                height: auto;
+                min-height: 100vh;
+                padding: 56px 20px 80px;
+                opacity: 0;
+                visibility: hidden;
+                display: none;
+            }
+            .slide.active {
+                display: flex;
+                opacity: 1;
+                visibility: visible;
+            }
+
+            /* Typography scale down */
+            .slide-title { font-size: 28px !important; letter-spacing: -0.5px; }
+            h2 { font-size: 22px !important; }
+            h3 { font-size: 14px !important; }
+            p, td, li { font-size: 13px !important; }
+            .slide-subtitle { font-size: 14px !important; }
+
+            /* Grids → single column */
+            .grid-3, .grid-4, .grid-2 { grid-template-columns: 1fr !important; gap: 12px !important; }
+
+            /* Flow → vertical, hide arrows */
+            .flow-wrapper { grid-template-columns: 1fr !important; gap: 12px !important; }
+            .flow-arrow { display: none; }
+            .flow-step { flex-direction: row; align-items: flex-start; text-align: left; padding: 12px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; }
+            .flow-body { text-align: left; }
+
+            /* Badges → wrap */
+            .badge-row { flex-wrap: wrap; gap: 8px; }
+            .badge { font-size: 11px; padding: 5px 10px; }
+
+            /* Cards */
+            .problem-card, .why-card { padding: 14px; }
+            .problem-icon, .why-icon { font-size: 22px; }
+            .solution-card { padding: 16px; }
+            .solution-card .icon-wrap { width: 40px; height: 40px; font-size: 18px; }
+
+            /* Pricing table → horizontal scroll */
+            .pricing-table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; width: 100%; border-radius: 12px; }
+            .pricing-table { font-size: 12px !important; min-width: 480px; }
+            .pricing-table th, .pricing-table td { padding: 8px 10px !important; }
+            .pkg-emoji { font-size: 14px; }
+
+            /* Calculator */
+            #calc-package { font-size: 13px; }
+
+            /* Nav */
+            .nav-controls { bottom: 16px; padding: 6px 16px; gap: 12px; }
+            .nav-btn { width: 40px; height: 40px; font-size: 18px; }
+
+            /* Step items */
+            .step-list { max-width: 100%; }
+            .step-item { padding: 12px 14px; }
+
+            /* Calculator */
+            .calc-wrapper { padding: 18px 16px !important; }
+            .calc-controls { grid-template-columns: 1fr !important; gap: 14px !important; }
+            .calc-results { grid-template-columns: 1fr !important; gap: 10px !important; }
+            .calc-results > div { padding: 12px 16px !important; display: flex; align-items: center; justify-content: space-between; flex-direction: row !important; }
+            .calc-results > div > div:nth-child(2) { font-size: 24px !important; }
+            #calc-package { width: 100%; max-width: 100%; }
+
+            /* Hide Entrega column on mobile */
+            .pricing-table th:last-child,
+            .pricing-table td:last-child { display: none; }
+            .pricing-table-wrap { overflow-x: unset !important; }
+            .pricing-table { min-width: unset !important; }
+
+            /* Funnel grids → single column on mobile */
+            .funnel-top-grid { grid-template-columns: 1fr !important; gap: 8px !important; }
+            .funnel-bottom-grid { grid-template-columns: repeat(2, 1fr) !important; gap: 8px !important; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="progress-bar" id="progressBar"></div>
+
+<div class="slide-deck">
+
+<!-- SLIDE 1: COVER -->
+<div class="slide slide-1 active">
+    <div class="bg-glow bg-glow-1"></div>
+    <div class="bg-glow bg-glow-2"></div>
+    <div class="slide-content" style="position:relative;z-index:1;">
+        <div class="animate-1">
+            <span class="label label-neon">Propuesta de Partnership</span>
+        </div>
+        <h1 class="slide-title animate-2" style="font-size:clamp(40px,6vw,80px);max-width:820px;">
+            Tu agencia atrae los leads.<br>Nosotros los convertimos.
+        </h1>
+        <p class="slide-subtitle animate-3">
+            Tú haces el marketing. Nosotros automatizamos el seguimiento:<br>
+            atención 24/7, calificación con IA y reportes en tiempo real.
+        </p>
+        <div class="badge-row animate-4">
+            <div class="badge"><span class="badge-dot"></span> Sin inversión inicial</div>
+            <div class="badge"><span class="badge-dot"></span> Servicio end-to-end para tus clientes</div>
+            <div class="badge"><span class="badge-dot"></span> 20% comisión por venta</div>
+        </div>
+    </div>
+</div>
+
+<!-- SLIDE 2: PROBLEM -->
+<div class="slide">
+    <div class="slide-content">
+        <div class="animate-1" style="text-align:center;">
+            <span class="label">El problema</span>
+        </div>
+        <h2 class="animate-2" style="font-family:'Space Grotesk',sans-serif;font-size:clamp(26px,3.5vw,44px);font-weight:700;text-align:center;max-width:740px;line-height:1.2;">
+            Tus clientes consiguen leads.<br>Pero los pierden después.
+        </h2>
+        <div class="grid-2 animate-3" style="max-width:900px;">
+            <div class="problem-card">
+                <div class="problem-icon">📩</div>
+                <div>
+                    <h3>El lead llega y nadie lo atiende</h3>
+                    <p>La campaña funciona, el prospecto escribe — y espera horas. Si no responden en los primeros 5 minutos, la probabilidad de cierre cae más del 80%.</p>
+                </div>
+            </div>
+            <div class="problem-card">
+                <div class="problem-icon">🕐</div>
+                <div>
+                    <h3>Fuera de horario = oportunidad perdida</h3>
+                    <p>Los leads llegan de noche, fines de semana y feriados. Sin alguien que responda, ese presupuesto de pauta no se convierte.</p>
+                </div>
+            </div>
+            <div class="problem-card">
+                <div class="problem-icon">🔁</div>
+                <div>
+                    <h3>Sin seguimiento el lead se enfría</h3>
+                    <p>El 80% de las ventas necesita entre 5 y 12 contactos. Nadie hace ese follow-up manualmente. El lead compra en otra parte.</p>
+                </div>
+            </div>
+            <div class="problem-card">
+                <div class="problem-icon">📊</div>
+                <div>
+                    <h3>No hay visibilidad del ROI real</h3>
+                    <p>La agencia entrega leads pero el cliente no sabe cuántos convirtieron ni cuánto costó cada venta. Sin datos, el contrato de marketing queda en riesgo.</p>
+                </div>
+            </div>
+        </div>
+        <p class="animate-4" style="font-size:15px;color:var(--text-muted);text-align:center;">
+            Tú haces el trabajo difícil de generar el lead. Nosotros completamos el ciclo.
+        </p>
+    </div>
+</div>
+
+<!-- SLIDE 3: SOLUTION -->
+<div class="slide">
+    <div class="slide-content">
+        <div class="animate-1" style="text-align:center;">
+            <span class="label">La solución</span>
+        </div>
+        <h2 class="animate-2" style="font-family:'Space Grotesk',sans-serif;font-size:clamp(24px,3.2vw,42px);font-weight:700;text-align:center;max-width:750px;line-height:1.2;">
+            Automatizaciones con IA construidas a medida para cada negocio
+        </h2>
+        <div class="grid-3 animate-3" style="max-width:950px;">
+            <div class="solution-card">
+                <div class="icon-wrap">🤖</div>
+                <h3>Powered by IA</h3>
+                <p>Workflows inteligentes que entienden contexto, toman decisiones y escalan solos.</p>
+            </div>
+            <div class="solution-card">
+                <div class="icon-wrap">⚡</div>
+                <h3>Entrega rápida</h3>
+                <p>De 1 a 7 días según el paquete. El cliente ve resultados en la primera semana.</p>
+            </div>
+            <div class="solution-card">
+                <div class="icon-wrap">🔌</div>
+                <h3>Se conecta con todo</h3>
+                <p>WhatsApp, CRM, email, Google Sheets, redes sociales — lo que el cliente ya usa.</p>
+            </div>
+            <div class="solution-card">
+                <div class="icon-wrap">📈</div>
+                <h3>ROI demostrable</h3>
+                <p>Cada automatización tiene un impacto medible: tiempo ahorrado, leads recuperados, ventas.</p>
+            </div>
+            <div class="solution-card">
+                <div class="icon-wrap">🛡️</div>
+                <h3>Mantenimiento incluido</h3>
+                <p>Monitoreamos que todo funcione y actualizamos cuando cambian APIs o integraciones.</p>
+            </div>
+            <div class="solution-card">
+                <div class="icon-wrap">💬</div>
+                <h3>Soporte continuo</h3>
+                <p>Soporte por WhatsApp. El cliente nunca queda solo después de la entrega.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- SLIDE 4: HOW IT WORKS -->
+<div class="slide">
+    <div class="slide-content">
+        <div class="animate-1" style="text-align:center;">
+            <span class="label">Cómo funciona</span>
+        </div>
+        <h2 class="animate-2" style="font-family:'Space Grotesk',sans-serif;font-size:clamp(22px,3vw,40px);font-weight:700;text-align:center;line-height:1.2;max-width:720px;">
+            Tu marketing trae los leads.<br>Nuestras automatizaciones los convierten.
+        </h2>
+
+        <!-- Two-layer funnel -->
+        <div class="animate-3" style="width:100%;max-width:960px;display:flex;flex-direction:column;gap:14px;">
+
+            <!-- Layer 1: Agency (top of funnel) -->
+            <div style="background:rgba(99,102,241,0.07);border:1px solid rgba(99,102,241,0.2);border-radius:16px;padding:16px 22px;">
+                <div style="font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--primary-light);margin-bottom:12px;">📣 Tu agencia — Top of funnel</div>
+                <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;" class="funnel-top-grid">
+                    <div style="text-align:center;padding:10px;background:rgba(255,255,255,0.04);border-radius:10px;">
+                        <div style="font-size:22px;margin-bottom:4px;">📢</div>
+                        <div style="font-size:13px;font-weight:600;">Publicidad</div>
+                        <div style="font-size:12px;color:var(--text-muted);">Ads en Meta, Google, TikTok</div>
+                    </div>
+                    <div style="text-align:center;padding:10px;background:rgba(255,255,255,0.04);border-radius:10px;">
+                        <div style="font-size:22px;margin-bottom:4px;">✍️</div>
+                        <div style="font-size:13px;font-weight:600;">Contenido</div>
+                        <div style="font-size:12px;color:var(--text-muted);">Redes, SEO, email marketing</div>
+                    </div>
+                    <div style="text-align:center;padding:10px;background:rgba(255,255,255,0.04);border-radius:10px;">
+                        <div style="font-size:22px;margin-bottom:4px;">🎯</div>
+                        <div style="font-size:13px;font-weight:600;">Leads generados</div>
+                        <div style="font-size:12px;color:var(--text-muted);">Prospectos interesados y listos</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Arrow connector -->
+            <div style="text-align:center;font-size:22px;color:var(--accent);line-height:1;">↓</div>
+
+            <!-- Layer 2: Automations (bottom of funnel) -->
+            <div style="background:rgba(16,185,129,0.07);border:1px solid rgba(16,185,129,0.2);border-radius:16px;padding:16px 22px;">
+                <div style="font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--accent);margin-bottom:12px;">⚡ Nuestras automatizaciones — Bottom of funnel</div>
+                <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;" class="funnel-bottom-grid">
+                    <div style="text-align:center;padding:10px;background:rgba(255,255,255,0.04);border-radius:10px;">
+                        <div style="font-size:20px;margin-bottom:4px;">🤖</div>
+                        <div style="font-size:13px;font-weight:600;">Atención 24/7</div>
+                        <div style="font-size:12px;color:var(--text-muted);">Respuesta inmediata por WhatsApp</div>
+                    </div>
+                    <div style="text-align:center;padding:10px;background:rgba(255,255,255,0.04);border-radius:10px;">
+                        <div style="font-size:20px;margin-bottom:4px;">🎯</div>
+                        <div style="font-size:13px;font-weight:600;">Calificación IA</div>
+                        <div style="font-size:12px;color:var(--text-muted);">Clasifica y prioriza leads calientes</div>
+                    </div>
+                    <div style="text-align:center;padding:10px;background:rgba(255,255,255,0.04);border-radius:10px;">
+                        <div style="font-size:20px;margin-bottom:4px;">💬</div>
+                        <div style="font-size:13px;font-weight:600;">Nurturing automático</div>
+                        <div style="font-size:12px;color:var(--text-muted);">Follow-up hasta cerrar la venta</div>
+                    </div>
+                    <div style="text-align:center;padding:10px;background:rgba(255,255,255,0.04);border-radius:10px;">
+                        <div style="font-size:20px;margin-bottom:4px;">📊</div>
+                        <div style="font-size:13px;font-weight:600;">Reportes en tiempo real</div>
+                        <div style="font-size:12px;color:var(--text-muted);">El cliente ve su ROI claramente</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="animate-4" style="display:flex;flex-direction:column;gap:8px;width:100%;max-width:960px;">
+            <div style="background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.2);border-radius:12px;padding:12px 24px;text-align:center;">
+                <p style="font-size:14px;color:var(--amber);">
+                    <strong>Resultado:</strong> Tu agencia ofrece un servicio end-to-end. Más valor para el cliente, más retención para ti.
+                </p>
+            </div>
+            <div style="text-align:center;">
+                <span style="font-size:12px;color:var(--text-muted);">💬 Los porcentajes de comisión son negociables — hablemos.</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- SLIDE 5: PRICING TABLE -->
+<div class="slide">
+    <div class="slide-content">
+        <div class="animate-1" style="text-align:center;">
+            <span class="label">Catálogo de paquetes</span>
+        </div>
+        <h2 class="animate-2" style="font-family:'Space Grotesk',sans-serif;font-size:clamp(22px,2.8vw,36px);font-weight:700;text-align:center;">
+            8 automatizaciones listas para vender
+        </h2>
+        <div class="animate-3 pricing-table-wrap" style="width:100%;background:var(--bg-card);border:1px solid var(--border);border-radius:16px;overflow:hidden;">
+            <table class="pricing-table">
+                <thead>
+                    <tr>
+                        <th>Automatización</th>
+                        <th>Setup (one-time)</th>
+                        <th>Mantenimiento/mes</th>
+                        <th>Entrega</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><span class="pkg-emoji">🎯</span><span class="pkg-name">Calificación de leads con IA</span></td>
+                        <td><span class="price-setup">$2,500</span></td>
+                        <td><span class="price-monthly">$250/mes</span></td>
+                        <td><span class="days-badge">2 días</span></td>
+                    </tr>
+                    <tr>
+                        <td><span class="pkg-emoji">💬</span><span class="pkg-name">Nurturing automático WhatsApp/Email</span></td>
+                        <td><span class="price-setup">$2,500</span></td>
+                        <td><span class="price-monthly">$300/mes</span></td>
+                        <td><span class="days-badge">2-3 días</span></td>
+                    </tr>
+                    <tr>
+                        <td><span class="pkg-emoji">📊</span><span class="pkg-name">Reporte semanal automatizado</span></td>
+                        <td><span class="price-setup">$800</span></td>
+                        <td><span class="price-monthly">$150/mes</span></td>
+                        <td><span class="days-badge">1 día</span></td>
+                    </tr>
+                    <tr>
+                        <td><span class="pkg-emoji">🤖</span><span class="pkg-name">Atención al cliente con IA 24/7</span></td>
+                        <td><span class="price-setup">$3,500</span></td>
+                        <td><span class="price-monthly">$400/mes</span></td>
+                        <td><span class="days-badge">3-5 días</span></td>
+                    </tr>
+                    <tr>
+                        <td><span class="pkg-emoji">🚀</span><span class="pkg-name">Pipeline de ventas completo</span></td>
+                        <td><span class="price-setup">$6,000</span></td>
+                        <td><span class="price-monthly">$600/mes</span></td>
+                        <td><span class="days-badge">5-7 días</span></td>
+                    </tr>
+                    <tr>
+                        <td><span class="pkg-emoji">📄</span><span class="pkg-name">Procesamiento de documentos con IA</span></td>
+                        <td><span class="price-setup">$4,000</span></td>
+                        <td><span class="price-monthly">$450/mes</span></td>
+                        <td><span class="days-badge">4-6 días</span></td>
+                    </tr>
+                    <tr>
+                        <td><span class="pkg-emoji">✍️</span><span class="pkg-name">Generación y publicación de contenido</span></td>
+                        <td><span class="price-setup">$2,500</span></td>
+                        <td><span class="price-monthly">$300/mes</span></td>
+                        <td><span class="days-badge">2-3 días</span></td>
+                    </tr>
+                    <tr>
+                        <td><span class="pkg-emoji">🎁</span><span class="pkg-name">Onboarding automático de clientes</span></td>
+                        <td><span class="price-setup">$1,800</span></td>
+                        <td><span class="price-monthly">$350/mes</span></td>
+                        <td><span class="days-badge">3-4 días</span></td>
+                    </tr>
+                    <tr style="background:rgba(99,102,241,0.05);">
+                        <td>
+                            <span class="pkg-emoji">⚙️</span>
+                            <span class="pkg-name">Automatización personalizada</span>
+                            <div style="font-size:12px;color:var(--text-muted);margin-top:3px;margin-left:26px;">Cualquier flujo específico que el negocio necesite</div>
+                        </td>
+                        <td><span class="price-setup">Desde $1,500</span></td>
+                        <td><span class="price-monthly">A definir</span></td>
+                        <td><span class="days-badge" style="background:rgba(99,102,241,0.15);color:var(--primary-light);">A medida</span></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- SLIDE 6: COMMISSIONS -->
+<div class="slide">
+    <div class="slide-content">
+        <div class="animate-1" style="text-align:center;">
+            <span class="label">Tu ganancia</span>
+        </div>
+        <h2 class="animate-2" style="font-family:'Space Grotesk',sans-serif;font-size:clamp(20px,2.8vw,38px);font-weight:700;text-align:center;max-width:700px;line-height:1.2;">
+            Calcula cuánto ganas con cada venta
+        </h2>
+
+        <div class="animate-3 calc-wrapper" style="width:100%;max-width:860px;background:var(--bg-card);border:1px solid var(--border);border-radius:20px;padding:28px 32px;display:flex;flex-direction:column;gap:20px;box-sizing:border-box;overflow:hidden;">
+
+            <!-- Controls row -->
+            <div class="calc-controls" style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
+                <div style="display:flex;flex-direction:column;gap:8px;">
+                    <label style="font-size:12px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:var(--text-muted);">Paquete</label>
+                    <select id="calc-package" onchange="calcUpdate()" style="background:#1a1a2e;border:1px solid var(--border);border-radius:10px;color:var(--text);padding:10px 14px;font-size:14px;font-family:'Inter',sans-serif;cursor:pointer;outline:none;">
+                        <option value="800,150">📊 Reporte semanal — $800</option>
+                        <option value="1800,350">🎁 Onboarding de clientes — $1,800</option>
+                        <option value="2500,250">🎯 Calificación de leads — $2,500</option>
+                        <option value="2500,300" selected>💬 Nurturing WhatsApp/Email — $2,500</option>
+                        <option value="2500,300">✍️ Generación de contenido — $2,500</option>
+                        <option value="3500,400">🤖 Atención al cliente 24/7 — $3,500</option>
+                        <option value="4000,450">📄 Procesamiento de documentos — $4,000</option>
+                        <option value="6000,600">🚀 Pipeline de ventas completo — $6,000</option>
+                    </select>
+                </div>
+                <div style="display:flex;flex-direction:column;gap:8px;">
+                    <label style="font-size:12px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:var(--text-muted);">Clientes al mes <span id="clients-val" style="color:var(--primary-light);margin-left:6px;">2</span></label>
+                    <div style="display:flex;flex-direction:column;gap:8px;padding-top:4px;">
+                        <input id="calc-clients" type="range" min="1" max="5" value="2" oninput="calcUpdate()" style="width:100%;accent-color:var(--primary);height:4px;cursor:pointer;">
+                        <div style="display:flex;justify-content:space-between;">
+                            <span style="font-size:11px;color:var(--text-muted);">1 cliente</span>
+                            <span style="font-size:11px;color:var(--accent);font-weight:600;">5 máx.</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Results row -->
+            <div class="calc-results" style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;">
+                <div style="background:rgba(99,102,241,0.08);border:1px solid rgba(99,102,241,0.18);border-radius:12px;padding:16px;text-align:center;">
+                    <div style="font-size:11px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:var(--primary-light);margin-bottom:6px;">Comisión setup</div>
+                    <div id="res-setup" style="font-family:'Space Grotesk',sans-serif;font-size:clamp(22px,3vw,32px);font-weight:800;background:var(--gradient-primary);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">$500</div>
+                    <div style="font-size:12px;color:var(--text-muted);margin-top:3px;">este mes</div>
+                </div>
+                <div style="background:rgba(16,185,129,0.08);border:1px solid rgba(16,185,129,0.18);border-radius:12px;padding:16px;text-align:center;">
+                    <div style="font-size:11px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:var(--accent);margin-bottom:6px;">MRR acumulado</div>
+                    <div id="res-mrr" style="font-family:'Space Grotesk',sans-serif;font-size:clamp(22px,3vw,32px);font-weight:800;color:var(--accent);">$60/mes</div>
+                    <div style="font-size:12px;color:var(--text-muted);margin-top:3px;">por estos clientes</div>
+                </div>
+                <div style="background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.18);border-radius:12px;padding:16px;text-align:center;">
+                    <div style="font-size:11px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:var(--amber);margin-bottom:6px;">Total a 12 meses</div>
+                    <div id="res-total" style="font-family:'Space Grotesk',sans-serif;font-size:clamp(22px,3vw,32px);font-weight:800;background:var(--gradient-amber);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">$1,220</div>
+                    <div style="font-size:12px;color:var(--text-muted);margin-top:3px;">solo de estos clientes</div>
+                </div>
+            </div>
+
+            <p style="font-size:12px;color:var(--text-muted);text-align:center;margin-top:-4px;">
+                20% del setup · 10% del mantenimiento mensual × 12 meses · máx. 5 clientes/mes para entrega con calidad
+                <br><span style="-webkit-text-fill-color:var(--primary-light);color:var(--primary-light);font-weight:600;">Los porcentajes son negociables según volumen — conversemos.</span>
+            </p>
+        </div>
+    </div>
+</div>
+
+<!-- SLIDE 7: WHY US -->
+<div class="slide">
+    <div class="slide-content">
+        <div class="animate-1" style="text-align:center;">
+            <span class="label">Por qué trabajar con nosotros</span>
+        </div>
+        <h2 class="animate-2" style="font-family:'Space Grotesk',sans-serif;font-size:clamp(24px,3.2vw,42px);font-weight:700;text-align:center;max-width:700px;line-height:1.2;">
+            Tú vendes. Nosotros hacemos todo lo demás.
+        </h2>
+        <div class="grid-2 animate-3" style="max-width:900px;">
+            <div class="why-card">
+                <div class="why-icon">🎯</div>
+                <div>
+                    <h3>Material de ventas listo</h3>
+                    <p>Te damos todo: deck de presentación, descripción de cada paquete, respuestas a objeciones. Solo lo presentas.</p>
+                </div>
+            </div>
+            <div class="why-card">
+                <div class="why-icon">⚡</div>
+                <div>
+                    <h3>Entrega rápida y confiable</h3>
+                    <p>Tus clientes ven resultados en días. Tu reputación queda bien con cada proyecto que cerramos.</p>
+                </div>
+            </div>
+            <div class="why-card">
+                <div class="why-icon">💰</div>
+                <div>
+                    <h3>Ingresos recurrentes</h3>
+                    <p>El mantenimiento mensual te genera ingresos pasivos por 12 meses con cada cliente que cierras.</p>
+                </div>
+            </div>
+            <div class="why-card">
+                <div class="why-icon">🤝</div>
+                <div>
+                    <h3>Soporte completo de nuestra parte</h3>
+                    <p>Respaldamos cada venta. Si algo falla en la entrega, es nuestro problema, no el tuyo.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- SLIDE 8: CTA -->
+<div class="slide">
+    <div class="bg-glow" style="width:600px;height:400px;background:var(--primary);top:50%;left:50%;transform:translate(-50%,-50%);opacity:0.08;"></div>
+    <div class="slide-content" style="position:relative;z-index:1;">
+        <div class="animate-1" style="text-align:center;">
+            <span class="label">Próximos pasos</span>
+        </div>
+        <h2 class="animate-2" style="font-family:'Space Grotesk',sans-serif;font-size:clamp(28px,4vw,54px);font-weight:800;text-align:center;max-width:700px;line-height:1.15;">
+            Una llamada de 30 min.<br>
+            <span style="background:var(--gradient-primary);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">Eso es todo lo que necesitamos.</span>
+        </h2>
+        <div class="step-list animate-3">
+            <div class="step-item">
+                <div class="step-num">1</div>
+                <p><strong>Llamada de alineación</strong> — Te explicamos el proceso, respondemos dudas y vemos si hay fit.</p>
+            </div>
+            <div class="step-item">
+                <div class="step-num">2</div>
+                <p><strong>Acuerdo de palabra</strong> — Alineamos comisiones, proceso de entrega y soporte. Sin papeleo.</p>
+            </div>
+            <div class="step-item">
+                <div class="step-num">3</div>
+                <p><strong>Empiezas a vender</strong> — Te damos el material. Tú identificas el primer cliente. Nosotros cerramos juntos.</p>
+            </div>
+        </div>
+        <div class="animate-4" style="text-align:center;margin-top:8px;">
+            <p style="font-size:14px;color:var(--text-muted);">¿Listo para agregar un servicio nuevo sin contratar a nadie?</p>
+            <p style="font-size:13px;color:var(--primary-light);margin-top:4px;">Los porcentajes de comisión son negociables — hay espacio para llegar a algo que funcione para los dos.</p>
+            <div style="margin-top:12px;font-family:'Space Grotesk',sans-serif;font-size:18px;font-weight:700;color:var(--accent);">
+                WhatsApp: +507 6541-9867
+            </div>
+        </div>
+    </div>
+</div>
+
+</div><!-- /.slide-deck -->
+
+<div class="nav-controls">
+    <button class="nav-btn" onclick="prevSlide()">←</button>
+    <span class="slide-counter"><span id="current">1</span> / <span id="total">8</span></span>
+    <button class="nav-btn" onclick="nextSlide()">→</button>
+</div>
+
+<script>
+    let current = 1;
+    const total = document.querySelectorAll('.slide').length;
+    document.getElementById('total').textContent = total;
+
+    function showSlide(n) {
+        if (n < 1) n = 1;
+        if (n > total) n = total;
+        current = n;
+        document.querySelectorAll('.slide').forEach((s, i) => {
+            s.classList.toggle('active', i === n - 1);
+        });
+        document.getElementById('current').textContent = n;
+        document.getElementById('progressBar').style.width = (n / total * 100) + '%';
+    }
+
+    function nextSlide() { showSlide(current + 1); }
+    function prevSlide() { showSlide(current - 1); }
+
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); nextSlide(); }
+        if (e.key === 'ArrowLeft') { e.preventDefault(); prevSlide(); }
+    });
+
+    showSlide(1);
+
+    function calcUpdate() {
+        const pkg = document.getElementById('calc-package').value.split(',');
+        const setup = parseInt(pkg[0]);
+        const monthly = parseInt(pkg[1]);
+        const clients = parseInt(document.getElementById('calc-clients').value);
+
+        document.getElementById('clients-val').textContent = clients;
+
+        const commSetup = setup * 0.20 * clients;
+        const commMrr = monthly * 0.10 * clients;
+        const commTotal = commSetup + commMrr * 12;
+
+        const fmt = n => '$' + n.toLocaleString('en-US');
+        document.getElementById('res-setup').textContent = fmt(commSetup);
+        document.getElementById('res-mrr').textContent = fmt(commMrr) + '/mes';
+        document.getElementById('res-total').textContent = fmt(commTotal);
+    }
+    calcUpdate();
+</script>
+</body>
+</html>
