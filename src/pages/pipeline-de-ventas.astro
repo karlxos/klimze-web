@@ -1,0 +1,187 @@
+---
+---
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pipeline de Ventas — Demo Klimze</title>
+  <link rel="stylesheet" href="/demo.css" />
+  <style>
+    .lead-entry{display:flex;flex-direction:column;align-items:center;gap:14px;padding:48px 0;min-height:220px;justify-content:center}
+    .lead-entry .big-icon{font-size:48px}
+    .lead-entry .lead-name{font-size:22px;font-weight:800;letter-spacing:-.01em}
+    .lead-entry .lead-sub{color:rgba(255,255,255,.38);font-size:13px}
+    .advance-wrap{text-align:center;padding-top:4px}
+    .advance-btn{display:inline-flex;align-items:center;gap:8px;background:#6366f1;color:#fff;border:none;border-radius:10px;padding:12px 28px;font-size:14px;font-weight:600;cursor:pointer;transition:all .2s;box-shadow:0 4px 16px rgba(99,102,241,.35)}
+    .advance-btn:hover{background:#5558e8;transform:translateY(-1px)}
+    .advance-btn:disabled{background:#222;color:#555;cursor:not-allowed;box-shadow:none;transform:none}
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="demo-nav">
+  <a href="/demos" class="back-link">
+    <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
+    Demos
+  </a>
+  <div class="nav-demo-name">🚀 Pipeline de Ventas</div>
+  <div class="nav-price">$7,500/mes</div>
+</nav>
+
+<!-- HEADER -->
+<header class="demo-header">
+  <canvas id="mini-canvas"></canvas>
+  <div class="demo-header-content">
+    <div class="demo-header-icon">🚀</div>
+    <h1>Pipeline de <span>Ventas</span></h1>
+    <p>Ingresa el tipo de negocio y nombre del lead. El sistema genera los mensajes, los envía en cada etapa y construye la secuencia de seguimiento.</p>
+    <div style="display:flex;flex-direction:column;gap:10px;width:100%;max-width:360px;margin-top:8px">
+      <div class="form-row" style="margin:0"><label>Tipo de negocio</label><input id="inp-biz" placeholder="Ej: Clínica dental en Ciudad de Panamá" /></div>
+      <div class="form-row" style="margin:0"><label>Nombre del lead</label><input id="inp-name" placeholder="Ej: Carlos López" /></div>
+      <button class="btn-start-main" id="start-btn" onclick="initDemo()" style="margin-top:4px">▶ Iniciar simulación</button>
+    </div>
+  </div>
+</header>
+
+<!-- DEMO AREA -->
+<div class="demo-container">
+  <div id="demo-area" style="display:none">
+    <div class="steps-bar">
+      <div class="step-item current" id="step-1">1. Lead entra</div>
+      <div class="step-item" id="step-2">2. Pipeline</div>
+      <div class="step-item" id="step-3">3. Secuencia</div>
+    </div>
+
+    <!-- Phase 1: Lead entry animation -->
+    <div class="phase active" id="phase-1">
+      <div class="lead-entry">
+        <div class="big-icon">📥</div>
+        <div class="lead-name" id="lead-name-show"></div>
+        <div class="lead-sub">Nuevo lead recibido — generando pipeline personalizado...</div>
+        <div class="analysis-ring" id="entry-ring"></div>
+      </div>
+    </div>
+
+    <!-- Phase 2: Pipeline board -->
+    <div class="phase" id="phase-2">
+      <div class="pipeline-board" id="pipe-board"></div>
+      <div class="advance-wrap">
+        <button class="advance-btn" id="advance-btn" onclick="advanceStage()">Avanzar etapa →</button>
+      </div>
+    </div>
+
+    <!-- Phase 3: Follow-up sequence -->
+    <div class="phase" id="phase-3">
+      <div class="tag-label">Secuencia de follow-up automática</div>
+      <div class="seq-list" id="seq-list"></div>
+      <button class="reset-btn" onclick="resetDemo()">↺ Reiniciar simulación</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  const c=document.getElementById('mini-canvas'),ctx=c.getContext('2d');
+  let W,H,nodes=[];const N=40,DIST=140,SPD=0.35;
+  function resize(){W=c.width=c.offsetWidth;H=c.height=c.offsetHeight}
+  function init(){nodes=[];for(let i=0;i<N;i++)nodes.push({x:Math.random()*W,y:Math.random()*H,vx:(Math.random()-.5)*SPD,vy:(Math.random()-.5)*SPD,r:Math.random()*1.5+1,o:Math.random()*.4+.3})}
+  function draw(){ctx.clearRect(0,0,W,H);for(let i=0;i<nodes.length;i++)for(let j=i+1;j<nodes.length;j++){const dx=nodes[j].x-nodes[i].x,dy=nodes[j].y-nodes[i].y,d=Math.sqrt(dx*dx+dy*dy);if(d<DIST){const a=(1-d/DIST)*.28;ctx.beginPath();ctx.moveTo(nodes[i].x,nodes[i].y);ctx.lineTo(nodes[j].x,nodes[j].y);ctx.strokeStyle=`rgba(99,102,241,${a})`;ctx.lineWidth=.7;ctx.stroke()}}nodes.forEach(n=>{ctx.beginPath();ctx.arc(n.x,n.y,n.r,0,Math.PI*2);ctx.fillStyle=`rgba(180,190,255,${n.o})`;ctx.fill()})}
+  function update(){nodes.forEach(n=>{n.x+=n.vx;n.y+=n.vy;if(n.x<0||n.x>W)n.vx*=-1;if(n.y<0||n.y>H)n.vy*=-1})}
+  function loop(){update();draw();requestAnimationFrame(loop)}
+  new ResizeObserver(()=>{resize();init()}).observe(c.parentElement);
+  resize();init();loop();
+})();
+
+async function groq(prompt,temp=0.7){
+  const r=await fetch('/api/groq',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'llama-3.3-70b-versatile',messages:[{role:'user',content:prompt}],temperature:temp})});
+  const d=await r.json();return d.choices[0].message.content;
+}
+function sleep(ms){return new Promise(r=>setTimeout(r,ms))}
+function setPhase(n){
+  document.querySelectorAll('.phase').forEach((p,i)=>p.classList.toggle('active',i===n-1));
+  document.querySelectorAll('.step-item').forEach((s,i)=>{s.className='step-item'+(i<n-1?' done':i===n-1?' current':'')});
+}
+
+const STAGES=['Nuevo','Contactado','Interesado','Propuesta','Cerrado ✅'];
+let state={biz:'',name:'',msgs:[],stage:0};
+
+function initDemo(){
+  state.biz=document.getElementById('inp-biz').value||'negocio local';
+  state.name=document.getElementById('inp-name').value||'Carlos López';
+  state.stage=0;state.msgs=[];
+  document.getElementById('start-btn').style.display='none';
+  document.getElementById('demo-area').style.display='block';
+  document.getElementById('demo-area').scrollIntoView({behavior:'smooth',block:'start'});
+  document.getElementById('lead-name-show').textContent=state.name;
+  setPhase(1);
+  setTimeout(generatePipeline,800);
+}
+
+async function generatePipeline(){
+  const prompt=`Para el negocio "${state.biz}", crea 5 mensajes de WhatsApp (máx 2 líneas c/u) para pipeline de ventas: [Contacto inicial, Seguimiento, Oferta de valor, Propuesta, Cierre]. Lead: ${state.name}. Responde SOLO JSON: [{"etapa":"nombre","mensaje":"texto"}] sin markdown.`;
+  const raw=await groq(prompt,.5);
+  let msgs;
+  try{msgs=JSON.parse(raw.replace(/```(?:json)?\n?/g,'').replace(/```/g,'').trim())}
+  catch{msgs=STAGES.map((e,i)=>({etapa:e,mensaje:`Hola ${state.name}! ${['¿Cómo podemos ayudarte hoy?','¿Pudiste revisar lo que hablamos?','Tenemos la solución perfecta para ti.','Te envío la propuesta ahora mismo.','¿Empezamos esta semana?'][i]}`}))}
+  state.msgs=msgs;
+  buildBoard();
+  setPhase(2);
+}
+
+function buildBoard(){
+  const board=document.getElementById('pipe-board');board.innerHTML='';
+  STAGES.forEach((s,i)=>{
+    const col=document.createElement('div');col.className='pipe-col';
+    const card=document.createElement('div');card.className='pipe-card'+(i===0?' highlight':'');card.id=`pcard-${i}`;
+    if(i===0){card.innerHTML=`<div class="pipe-card-name">${state.name}</div><div style="font-size:11px;color:rgba(255,255,255,.38);margin-top:2px">Recién ingresado</div>`}
+    else{card.style.opacity='0.25';card.innerHTML=`<div class="pipe-card-name" style="color:rgba(255,255,255,.3)">${state.name}</div>`}
+    col.innerHTML=`<div class="pipe-col-title">${s}</div>`;col.appendChild(card);board.appendChild(col);
+  });
+}
+
+async function advanceStage(){
+  state.stage++;
+  if(state.stage>=STAGES.length){
+    document.getElementById('advance-btn').disabled=true;
+    await sleep(300);
+    setPhase(3);
+    buildSequence();
+    return;
+  }
+  STAGES.forEach((_,i)=>{
+    const c=document.getElementById(`pcard-${i}`);if(!c)return;
+    c.classList.toggle('highlight',i===state.stage);
+    c.style.opacity=i<=state.stage?'1':'0.25';
+    if(i===state.stage){
+      const msg=state.msgs[i]?.mensaje||'';
+      c.innerHTML=`<div class="pipe-card-name">${state.name}</div><div class="pipe-msg"><div class="pipe-msg-label">📤 Enviado</div>${msg}</div>`;
+    }
+  });
+  if(state.stage===STAGES.length-1)document.getElementById('advance-btn').textContent='Ver secuencia →';
+}
+
+function buildSequence(){
+  const el=document.getElementById('seq-list');el.innerHTML='';
+  const days=[1,3,7,14,30];
+  const triggers=['Nuevo lead','Sin respuesta 2d','Interés mostrado','Propuesta vista','Sin cierre 5d'];
+  state.msgs.forEach((m,i)=>{
+    const it=document.createElement('div');it.className='seq-item';
+    it.innerHTML=`<div class="seq-day">Día<br>${days[i]||i*7}</div><div class="seq-content"><div class="seq-trigger">${triggers[i]||'Automático'}</div><div class="seq-msg">${m.mensaje||''}</div></div>`;
+    el.appendChild(it);
+    setTimeout(()=>it.classList.add('show'),i*260+80);
+  });
+}
+
+function resetDemo(){
+  state={biz:'',name:'',msgs:[],stage:0};
+  document.getElementById('start-btn').style.display='';
+  document.getElementById('demo-area').style.display='none';
+  document.getElementById('advance-btn').textContent='Avanzar etapa →';
+  document.getElementById('advance-btn').disabled=false;
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+</script>
+</body>
+</html>

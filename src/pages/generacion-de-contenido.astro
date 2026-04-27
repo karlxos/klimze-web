@@ -1,0 +1,152 @@
+---
+---
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Generación de Contenido — Demo Klimze</title>
+  <link rel="stylesheet" href="/demo.css" />
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="demo-nav">
+  <a href="/demos" class="back-link">
+    <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
+    Demos
+  </a>
+  <div class="nav-demo-name">✍️ Generación de Contenido</div>
+  <div class="nav-price">$3,000/mes</div>
+</nav>
+
+<!-- HEADER -->
+<header class="demo-header">
+  <canvas id="mini-canvas"></canvas>
+  <div class="demo-header-content">
+    <div class="demo-header-icon">✍️</div>
+    <h1>Generación de <span>Contenido</span></h1>
+    <p>Ingresa tu negocio, red social y tema. La IA escribe el post en tiempo real y construye el calendario editorial automáticamente.</p>
+    <div style="display:flex;flex-direction:column;gap:10px;width:100%;max-width:360px;margin-top:8px">
+      <div class="form-row" style="margin:0"><label>Negocio / Nicho</label><input id="inp-biz" placeholder="Ej: Clínica dental" /></div>
+      <div class="form-row" style="margin:0">
+        <label>Red social</label>
+        <select id="inp-net"><option>Instagram</option><option>Facebook</option><option>LinkedIn</option><option>TikTok</option><option>X (Twitter)</option></select>
+      </div>
+      <div class="form-row" style="margin:0"><label>Tema del post</label><input id="inp-topic" placeholder="Ej: Blanqueamiento dental en 1 hora" /></div>
+      <button class="btn-start-main" id="start-btn" onclick="initDemo()" style="margin-top:4px">▶ Generar contenido</button>
+    </div>
+  </div>
+</header>
+
+<!-- DEMO AREA -->
+<div class="demo-container">
+  <div id="demo-area" style="display:none">
+    <div class="steps-bar">
+      <div class="step-item current" id="step-1">1. Generando</div>
+      <div class="step-item" id="step-2">2. Post listo</div>
+      <div class="step-item" id="step-3">3. Programado</div>
+    </div>
+
+    <!-- Phase 1: Loading -->
+    <div class="phase active" id="phase-1">
+      <div class="analysis-wrap">
+        <div class="analysis-ring"></div>
+        <div class="analysis-label" id="gen-label">Escribiendo con IA...</div>
+      </div>
+    </div>
+
+    <!-- Phase 2: Post result -->
+    <div class="phase" id="phase-2">
+      <div class="tag-label" id="net-label"></div>
+      <div class="content-output" id="post-output"></div>
+      <div style="text-align:center;margin-top:14px">
+        <button class="action-btn" onclick="schedulePost()">📅 Programar publicación →</button>
+      </div>
+    </div>
+
+    <!-- Phase 3: Calendar -->
+    <div class="phase" id="phase-3">
+      <div class="tag-label">📅 Calendario de publicaciones</div>
+      <div class="calendar-grid" id="cal-grid"></div>
+      <button class="reset-btn" onclick="resetDemo()">↺ Reiniciar simulación</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  const c=document.getElementById('mini-canvas'),ctx=c.getContext('2d');
+  let W,H,nodes=[];const N=40,DIST=140,SPD=0.35;
+  function resize(){W=c.width=c.offsetWidth;H=c.height=c.offsetHeight}
+  function init(){nodes=[];for(let i=0;i<N;i++)nodes.push({x:Math.random()*W,y:Math.random()*H,vx:(Math.random()-.5)*SPD,vy:(Math.random()-.5)*SPD,r:Math.random()*1.5+1,o:Math.random()*.4+.3})}
+  function draw(){ctx.clearRect(0,0,W,H);for(let i=0;i<nodes.length;i++)for(let j=i+1;j<nodes.length;j++){const dx=nodes[j].x-nodes[i].x,dy=nodes[j].y-nodes[i].y,d=Math.sqrt(dx*dx+dy*dy);if(d<DIST){const a=(1-d/DIST)*.28;ctx.beginPath();ctx.moveTo(nodes[i].x,nodes[i].y);ctx.lineTo(nodes[j].x,nodes[j].y);ctx.strokeStyle=`rgba(99,102,241,${a})`;ctx.lineWidth=.7;ctx.stroke()}}nodes.forEach(n=>{ctx.beginPath();ctx.arc(n.x,n.y,n.r,0,Math.PI*2);ctx.fillStyle=`rgba(180,190,255,${n.o})`;ctx.fill()})}
+  function update(){nodes.forEach(n=>{n.x+=n.vx;n.y+=n.vy;if(n.x<0||n.x>W)n.vx*=-1;if(n.y<0||n.y>H)n.vy*=-1})}
+  function loop(){update();draw();requestAnimationFrame(loop)}
+  new ResizeObserver(()=>{resize();init()}).observe(c.parentElement);
+  resize();init();loop();
+})();
+
+async function groq(prompt,temp=0.7){
+  const r=await fetch('/api/groq',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'llama-3.3-70b-versatile',messages:[{role:'user',content:prompt}],temperature:temp})});
+  const d=await r.json();return d.choices[0].message.content;
+}
+function sleep(ms){return new Promise(r=>setTimeout(r,ms))}
+function typewriter(el,text,speed=16){
+  return new Promise(res=>{let i=0;el.textContent='';const t=setInterval(()=>{el.textContent+=text[i++];if(i>=text.length){clearInterval(t);res()}},speed)});
+}
+function setPhase(n){
+  document.querySelectorAll('.phase').forEach((p,i)=>p.classList.toggle('active',i===n-1));
+  document.querySelectorAll('.step-item').forEach((s,i)=>{s.className='step-item'+(i<n-1?' done':i===n-1?' current':'')});
+}
+
+let state={biz:'',net:'',topic:'',text:''};
+
+async function initDemo(){
+  state.biz=document.getElementById('inp-biz').value||'negocio';
+  state.net=document.getElementById('inp-net').value||'Instagram';
+  state.topic=document.getElementById('inp-topic').value||'producto destacado';
+  document.getElementById('start-btn').style.display='none';
+  document.getElementById('demo-area').style.display='block';
+  document.getElementById('demo-area').scrollIntoView({behavior:'smooth',block:'start'});
+  setPhase(1);
+  document.getElementById('gen-label').textContent=`Escribiendo post para ${state.net}...`;
+  const prompt=`Crea un post de ${state.net} para "${state.biz}" sobre "${state.topic}". Gancho fuerte en la primera línea, emojis estratégicos, CTA claro al final. Listo para copiar y pegar. Español. Máx 220 palabras.`;
+  state.text=await groq(prompt,.82);
+  await sleep(300);
+  setPhase(2);
+  document.getElementById('net-label').textContent=`📱 Post generado para ${state.net}`;
+  await typewriter(document.getElementById('post-output'),state.text,14);
+}
+
+async function schedulePost(){
+  setPhase(3);
+  const days=['Lunes','Miércoles','Viernes'];
+  const times=['9:00 AM','12:00 PM','6:00 PM'];
+  const prompt=`Genera 2 títulos de posts adicionales (5-7 palabras c/u) para "${state.biz}" en ${state.net}. SOLO JSON: ["idea 1","idea 2"] sin markdown.`;
+  const raw=await groq(prompt,.9);
+  let ideas=[];
+  try{ideas=JSON.parse(raw.replace(/```(?:json)?\n?/g,'').replace(/```/g,'').trim())}
+  catch{ideas=['Post sobre tu servicio estrella','Testimonio de cliente satisfecho']}
+  const firstLine=state.text.split('\n').find(l=>l.trim())||state.text.substring(0,55)+'...';
+  const posts=[firstLine.substring(0,60)+(firstLine.length>60?'...':''),...ideas.slice(0,2).map(s=>String(s).substring(0,60))];
+  const grid=document.getElementById('cal-grid');grid.innerHTML='';
+  [0,1,2].forEach(i=>{
+    const it=document.createElement('div');it.className='cal-item';it.style.opacity='0';it.style.transform='translateY(10px)';it.style.transition='all .4s';
+    it.innerHTML=`<div class="cal-day">${days[i]} · ${times[i]}</div><div class="cal-text">${posts[i]||'Post programado'}</div><div class="cal-badge">✓ Programado</div>`;
+    grid.appendChild(it);
+    requestAnimationFrame(()=>setTimeout(()=>{it.style.opacity='1';it.style.transform='none'},i*200+50));
+  });
+}
+
+function resetDemo(){
+  state={biz:'',net:'',topic:'',text:''};
+  document.getElementById('start-btn').style.display='';
+  document.getElementById('demo-area').style.display='none';
+  document.getElementById('post-output').textContent='';
+  document.getElementById('cal-grid').innerHTML='';
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+</script>
+</body>
+</html>

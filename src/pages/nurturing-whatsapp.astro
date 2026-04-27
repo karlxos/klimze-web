@@ -1,0 +1,204 @@
+---
+---
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Nurturing WhatsApp — Demo Klimze</title>
+  <link rel="stylesheet" href="/demo.css" />
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="demo-nav">
+  <a href="/demos" class="back-link">
+    <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
+    Demos
+  </a>
+  <div class="nav-demo-name">💬 Nurturing WhatsApp</div>
+  <div class="nav-price">$3,000/mes</div>
+</nav>
+
+<!-- HEADER -->
+<header class="demo-header">
+  <canvas id="mini-canvas"></canvas>
+  <div class="demo-header-content">
+    <div class="demo-header-icon">💬</div>
+    <h1>Nurturing <span>WhatsApp</span></h1>
+    <p>Tú juegas como el cliente. El bot responde con IA. Cuando el cliente "desaparece", el sistema lanza la secuencia de reactivación automática.</p>
+    <div style="display:flex;flex-direction:column;gap:10px;width:100%;max-width:340px;margin-top:8px">
+      <div class="form-row" style="margin:0"><label>Tipo de negocio del bot</label><input id="inp-biz" placeholder="Ej: Spa de belleza en Panamá" /></div>
+      <button class="btn-start-main" id="start-btn" onclick="initDemo()" style="margin-top:4px">▶ Iniciar conversación</button>
+    </div>
+  </div>
+</header>
+
+<!-- DEMO AREA -->
+<div class="demo-container">
+  <div id="demo-area" style="display:none">
+    <div class="steps-bar">
+      <div class="step-item current" id="step-1">1. Conversación</div>
+      <div class="step-item" id="step-2">2. Intención</div>
+      <div class="step-item" id="step-3">3. Seguimiento</div>
+    </div>
+
+    <!-- Phase 1: Chat -->
+    <div class="phase active" id="phase-1">
+      <div class="chat-window">
+        <div class="chat-header">
+          <div class="chat-avatar">🤖</div>
+          <div>
+            <div class="chat-bot-name" id="bot-name">Bot del negocio</div>
+            <div class="chat-bot-status"><span class="online-dot"></span>En línea</div>
+          </div>
+        </div>
+        <div class="chat-messages" id="msgs"></div>
+        <div class="chat-input-row">
+          <input class="chat-input" id="chat-input" placeholder="Escribe como si fueras el cliente..." onkeydown="if(event.key==='Enter')sendMsg()" />
+          <button class="chat-send" id="chat-send" onclick="sendMsg()">
+            <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="white" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>
+          </button>
+        </div>
+      </div>
+      <div style="text-align:center;margin-top:14px">
+        <button class="action-btn ghost" onclick="finishChat()">Simular que el cliente desaparece →</button>
+      </div>
+    </div>
+
+    <!-- Phase 2: Detection -->
+    <div class="phase" id="phase-2">
+      <div class="analysis-wrap">
+        <div class="analysis-ring"></div>
+        <div class="analysis-label">Detectando intención y diseñando seguimiento...</div>
+        <div class="analysis-steps">
+          <div class="astep" id="as-1"><div class="astep-dot"></div>Analizando la conversación</div>
+          <div class="astep" id="as-2"><div class="astep-dot"></div>Identificando intención de compra</div>
+          <div class="astep" id="as-3"><div class="astep-dot"></div>Diseñando secuencia de reactivación</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Phase 3: Follow-up sequence -->
+    <div class="phase" id="phase-3">
+      <div class="tag-label">Secuencia automática si el cliente no responde</div>
+      <div class="seq-list" id="seq-list"></div>
+      <button class="reset-btn" onclick="resetDemo()">↺ Reiniciar simulación</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  const c=document.getElementById('mini-canvas'),ctx=c.getContext('2d');
+  let W,H,nodes=[];const N=40,DIST=140,SPD=0.35;
+  function resize(){W=c.width=c.offsetWidth;H=c.height=c.offsetHeight}
+  function init(){nodes=[];for(let i=0;i<N;i++)nodes.push({x:Math.random()*W,y:Math.random()*H,vx:(Math.random()-.5)*SPD,vy:(Math.random()-.5)*SPD,r:Math.random()*1.5+1,o:Math.random()*.4+.3})}
+  function draw(){ctx.clearRect(0,0,W,H);for(let i=0;i<nodes.length;i++)for(let j=i+1;j<nodes.length;j++){const dx=nodes[j].x-nodes[i].x,dy=nodes[j].y-nodes[i].y,d=Math.sqrt(dx*dx+dy*dy);if(d<DIST){const a=(1-d/DIST)*.28;ctx.beginPath();ctx.moveTo(nodes[i].x,nodes[i].y);ctx.lineTo(nodes[j].x,nodes[j].y);ctx.strokeStyle=`rgba(99,102,241,${a})`;ctx.lineWidth=.7;ctx.stroke()}}nodes.forEach(n=>{ctx.beginPath();ctx.arc(n.x,n.y,n.r,0,Math.PI*2);ctx.fillStyle=`rgba(180,190,255,${n.o})`;ctx.fill()})}
+  function update(){nodes.forEach(n=>{n.x+=n.vx;n.y+=n.vy;if(n.x<0||n.x>W)n.vx*=-1;if(n.y<0||n.y>H)n.vy*=-1})}
+  function loop(){update();draw();requestAnimationFrame(loop)}
+  new ResizeObserver(()=>{resize();init()}).observe(c.parentElement);
+  resize();init();loop();
+})();
+
+async function groq(prompt,temp=0.7){
+  const r=await fetch('/api/groq',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'llama-3.3-70b-versatile',messages:[{role:'user',content:prompt}],temperature:temp})});
+  const d=await r.json();return d.choices[0].message.content;
+}
+function sleep(ms){return new Promise(r=>setTimeout(r,ms))}
+function setPhase(n){
+  document.querySelectorAll('.phase').forEach((p,i)=>p.classList.toggle('active',i===n-1));
+  document.querySelectorAll('.step-item').forEach((s,i)=>{s.className='step-item'+(i<n-1?' done':i===n-1?' current':'')});
+}
+async function animateSteps(ids,delay=680){
+  for(const id of ids){
+    await sleep(delay);
+    const el=document.getElementById(id);if(!el)continue;
+    el.classList.add('active');await sleep(delay);el.classList.add('done');el.classList.remove('active');
+  }
+}
+
+let state={biz:'',history:[],busy:false};
+
+function initDemo(){
+  state.biz=document.getElementById('inp-biz').value||'negocio local';
+  state.history=[];state.busy=false;
+  document.getElementById('bot-name').textContent=`Bot de ${state.biz}`;
+  document.getElementById('start-btn').style.display='none';
+  document.getElementById('demo-area').style.display='block';
+  document.getElementById('demo-area').scrollIntoView({behavior:'smooth',block:'start'});
+  setPhase(1);
+  setTimeout(()=>botMsg(`¡Hola! 👋 Bienvenido a ${state.biz}. ¿En qué te podemos ayudar hoy?`),700);
+}
+
+function resetDemo(){
+  state={biz:'',history:[],busy:false};
+  document.getElementById('start-btn').style.display='';
+  document.getElementById('demo-area').style.display='none';
+  document.getElementById('msgs').innerHTML='';
+  document.getElementById('seq-list').innerHTML='';
+  document.getElementById('chat-input').disabled=false;
+  document.getElementById('chat-input').value='';
+  document.getElementById('chat-send').disabled=false;
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function botMsg(text){
+  const msgs=document.getElementById('msgs');
+  const t=document.createElement('div');t.className='typing';t.innerHTML='<span></span><span></span><span></span>';
+  msgs.appendChild(t);msgs.scrollTop=msgs.scrollHeight;
+  return new Promise(res=>setTimeout(()=>{
+    t.remove();const m=document.createElement('div');m.className='msg bot';m.textContent=text;
+    msgs.appendChild(m);msgs.scrollTop=msgs.scrollHeight;res();
+  },1300));
+}
+function userMsg(text){
+  const msgs=document.getElementById('msgs');
+  const m=document.createElement('div');m.className='msg user';m.textContent=text;
+  msgs.appendChild(m);msgs.scrollTop=msgs.scrollHeight;
+}
+
+async function sendMsg(){
+  if(state.busy)return;
+  const inp=document.getElementById('chat-input');
+  const val=inp.value.trim();if(!val)return;
+  inp.value='';
+  userMsg(val);
+  state.history.push({role:'user',content:val});
+  state.busy=true;
+  document.getElementById('chat-send').disabled=true;
+  const history=state.history.map(m=>`${m.role==='user'?'Cliente':'Bot'}: ${m.content}`).join('\n');
+  const prompt=`Eres el bot de WhatsApp de "${state.biz}". Responde al cliente de forma cálida y orientada a vender/agendar. Máx 3 líneas. Usa emojis sutiles. Español.\n\nConversación:\n${history}`;
+  const reply=await groq(prompt,.75);
+  state.history.push({role:'bot',content:reply});
+  await botMsg(reply);
+  state.busy=false;
+  document.getElementById('chat-send').disabled=false;
+  inp.focus();
+}
+
+async function finishChat(){
+  setPhase(2);
+  animateSteps(['as-1','as-2','as-3'],720);
+  const history=state.history.map(m=>`${m.role==='user'?'Cliente':'Bot'}: ${m.content}`).join('\n')||'(conversación vacía)';
+  const prompt=`Basado en esta conversación para "${state.biz}", crea 4 mensajes de reactivación automática (días 1, 3, 7, 14 sin respuesta). Responde SOLO JSON: [{"dia":1,"trigger":"string","mensaje":"string"},...] sin markdown.\n\n${history}`;
+  const raw=await groq(prompt,.5);
+  let seq;
+  try{seq=JSON.parse(raw.replace(/```(?:json)?\n?/g,'').replace(/```/g,'').trim())}
+  catch{seq=[{dia:1,trigger:'Sin respuesta 24h',mensaje:`¡Hola! Solo quería saber si pudiste revisar lo que hablamos 😊`},{dia:3,trigger:'Sin respuesta 3d',mensaje:`¿Sigues interesado? En ${state.biz} tenemos algo especial para ti esta semana.`},{dia:7,trigger:'Sin respuesta 7d',mensaje:`Hola! Han pasado unos días. ¿Podemos agendar 10 minutos para contarte más?`},{dia:14,trigger:'Reactivación final',mensaje:`Última oportunidad de aprovechar nuestra oferta. ¿Te interesa conocer más?`}]}
+  await sleep(2600);
+  buildSequence(seq);
+  setPhase(3);
+}
+
+function buildSequence(seq){
+  const el=document.getElementById('seq-list');el.innerHTML='';
+  seq.forEach((s,i)=>{
+    const it=document.createElement('div');it.className='seq-item';
+    it.innerHTML=`<div class="seq-day">Día<br>${s.dia||i+1}</div><div class="seq-content"><div class="seq-trigger">${s.trigger||'Automático'}</div><div class="seq-msg">${s.mensaje||''}</div></div>`;
+    el.appendChild(it);setTimeout(()=>it.classList.add('show'),i*260+80);
+  });
+}
+</script>
+</body>
+</html>
