@@ -112,6 +112,9 @@
       <label>Nombre completo</label>
       <input type="text" id="nombre" placeholder="Ej: María García" required />
 
+      <label>Negocio / Empresa</label>
+      <input type="text" id="negocio" placeholder="Ej: Tienda Ropa Bella" />
+
       <label>Teléfono / WhatsApp</label>
       <input type="text" id="telefono" placeholder="Ej: +507 6123-4567" />
 
@@ -155,6 +158,7 @@
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             nombre: document.getElementById('nombre').value,
+            negocio: document.getElementById('negocio').value,
             telefono: document.getElementById('telefono').value,
             mensaje: document.getElementById('mensaje').value,
           })
