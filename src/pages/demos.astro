@@ -1,0 +1,673 @@
+---
+---
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Demos en Vivo — Klimze</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #06060e;
+      color: #fff;
+      overflow-x: hidden;
+    }
+
+    /* ── HERO ── */
+    .hero {
+      position: relative;
+      width: 100%;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+    #network-canvas {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+    }
+    .hero-content {
+      position: relative;
+      z-index: 10;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 28px;
+    }
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      background: rgba(99,102,241,0.12);
+      border: 1px solid rgba(99,102,241,0.3);
+      color: #a5b4fc;
+      font-size: 12px;
+      font-weight: 600;
+      padding: 5px 14px;
+      border-radius: 20px;
+      letter-spacing: 0.5px;
+    }
+    .dot-pulse {
+      width: 6px; height: 6px;
+      background: #7c7cff;
+      border-radius: 50%;
+      animation: pulse 1.5s infinite;
+    }
+    @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.4;transform:scale(0.8)} }
+    .hero h1 {
+      font-size: clamp(28px, 5vw, 56px);
+      font-weight: 800;
+      line-height: 1.15;
+      letter-spacing: -0.02em;
+      color: #fff;
+      max-width: 640px;
+    }
+    .hero h1 span {
+      background: linear-gradient(135deg, #818cf8, #60a5fa);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .hero p {
+      color: rgba(255,255,255,0.45);
+      font-size: 16px;
+      max-width: 400px;
+      line-height: 1.6;
+    }
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      background: #6366f1;
+      color: #fff;
+      border: none;
+      border-radius: 14px;
+      padding: 16px 36px;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-decoration: none;
+      box-shadow: 0 0 40px rgba(99,102,241,0.4), 0 8px 32px rgba(0,0,0,0.4);
+    }
+    .btn-primary:hover {
+      background: #5558e8;
+      transform: translateY(-2px);
+      box-shadow: 0 0 60px rgba(99,102,241,0.55), 0 12px 40px rgba(0,0,0,0.5);
+    }
+    .btn-primary svg { transition: transform 0.2s; }
+    .btn-primary:hover svg { transform: translateY(3px); }
+    .scroll-hint {
+      color: rgba(255,255,255,0.2);
+      font-size: 12px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+    }
+
+    /* ── LIBRARY ── */
+    .library {
+      padding: 80px 24px 100px;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+    .library-header {
+      text-align: center;
+      margin-bottom: 56px;
+    }
+    .library-header h2 {
+      font-size: clamp(22px, 3.5vw, 36px);
+      font-weight: 800;
+      margin-bottom: 10px;
+    }
+    .library-header p {
+      color: rgba(255,255,255,0.4);
+      font-size: 15px;
+    }
+
+    .demos-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 20px;
+    }
+
+    /* ── DEMO CARD ── */
+    .demo-card {
+      background: #0f0f1a;
+      border: 1px solid rgba(99,102,241,0.15);
+      border-radius: 18px;
+      overflow: hidden;
+      transition: border-color 0.2s, transform 0.2s;
+    }
+    .demo-card:hover { border-color: rgba(99,102,241,0.4); transform: translateY(-2px); }
+    .card-header {
+      padding: 22px 22px 18px;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+    }
+    .card-icon {
+      font-size: 28px;
+      line-height: 1;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+    .card-meta { flex: 1; }
+    .card-title { font-weight: 700; font-size: 15px; margin-bottom: 3px; }
+    .card-desc { color: rgba(255,255,255,0.4); font-size: 13px; line-height: 1.5; }
+    .card-price {
+      font-size: 11px;
+      font-weight: 700;
+      color: #818cf8;
+      background: rgba(99,102,241,0.1);
+      border: 1px solid rgba(99,102,241,0.2);
+      padding: 2px 9px;
+      border-radius: 20px;
+      white-space: nowrap;
+    }
+
+    .card-body { padding: 18px 22px 22px; }
+
+    label {
+      display: block;
+      font-size: 12px;
+      color: rgba(255,255,255,0.45);
+      margin-bottom: 5px;
+      font-weight: 500;
+    }
+    input, textarea, select {
+      width: 100%;
+      background: #0a0a14;
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 10px;
+      padding: 10px 13px;
+      color: #fff;
+      font-size: 14px;
+      margin-bottom: 11px;
+      outline: none;
+      transition: border-color 0.2s;
+      font-family: inherit;
+    }
+    input:focus, textarea:focus, select:focus { border-color: #6366f1; }
+    textarea { resize: none; height: 80px; }
+    select option { background: #111; }
+
+    .btn-run {
+      width: 100%;
+      background: #6366f1;
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      padding: 12px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+      margin-top: 2px;
+    }
+    .btn-run:hover { background: #5558e8; }
+    .btn-run:disabled { background: #222; color: #555; cursor: not-allowed; }
+
+    .result-box {
+      display: none;
+      margin-top: 14px;
+      background: rgba(99,102,241,0.06);
+      border: 1px solid rgba(99,102,241,0.18);
+      border-radius: 12px;
+      padding: 14px 16px;
+      font-size: 13px;
+      color: rgba(255,255,255,0.8);
+      line-height: 1.65;
+      white-space: pre-wrap;
+    }
+    .result-box.show { display: block; }
+    .result-label {
+      font-size: 10px;
+      font-weight: 700;
+      color: #6366f1;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 7px;
+    }
+
+    /* lead card special */
+    .lead-verdict {
+      display: none;
+      margin-top: 14px;
+      border-radius: 12px;
+      padding: 14px 16px;
+      border: 1px solid;
+    }
+    .lead-verdict.calificado { background: #0d1f12; border-color: #1a4d2e; }
+    .lead-verdict.no-calificado { background: #1f0d0d; border-color: #4d1a1a; }
+    .lead-verdict.show { display: block; }
+    .verdict-row { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+    .verdict-icon { font-size: 18px; }
+    .verdict-title { font-weight: 700; font-size: 14px; }
+    .verdict-prio {
+      font-size: 11px; font-weight: 600;
+      padding: 2px 9px; border-radius: 20px;
+    }
+    .prio-alta { background: rgba(255,77,77,0.13); color: #ff6b6b; border: 1px solid rgba(255,77,77,0.25); }
+    .prio-media { background: rgba(255,165,0,0.13); color: #ffb84d; border: 1px solid rgba(255,165,0,0.25); }
+    .prio-baja { background: rgba(120,120,120,0.13); color: #888; border: 1px solid rgba(120,120,120,0.25); }
+    .verdict-razon { color: rgba(255,255,255,0.55); font-size: 12px; margin-bottom: 10px; }
+    .verdict-respuesta-label { font-size: 10px; color: #555; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 5px; }
+    .verdict-respuesta { font-size: 13px; color: rgba(255,255,255,0.75); line-height: 1.6; }
+
+    .spinner-text {
+      display: none;
+      text-align: center;
+      padding: 10px 0 0;
+      color: rgba(255,255,255,0.35);
+      font-size: 13px;
+    }
+    .spinner-text.show { display: block; }
+  </style>
+</head>
+<body>
+
+  <!-- ── HERO ─────────────────────────────────────────────────────────────── -->
+  <section class="hero" id="hero">
+    <canvas id="network-canvas"></canvas>
+    <div class="hero-content">
+      <div class="hero-badge">
+        <span class="dot-pulse"></span>
+        Automatizaciones en vivo
+      </div>
+      <h1>La IA que trabaja<br><span>mientras tú descansas</span></h1>
+      <p>Explora las automatizaciones más potentes. Pruébalas en tiempo real con tus propios datos.</p>
+      <a href="#biblioteca" class="btn-primary">
+        Probar Demos
+        <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/>
+        </svg>
+      </a>
+      <span class="scroll-hint">scroll para ver las demos</span>
+    </div>
+  </section>
+
+  <!-- ── LIBRARY ───────────────────────────────────────────────────────────── -->
+  <section class="library" id="biblioteca">
+    <div class="library-header">
+      <h2>Biblioteca de Automatizaciones</h2>
+      <p>Cada demo usa IA real. Escribe tus propios datos y ve el resultado en segundos.</p>
+    </div>
+
+    <div class="demos-grid">
+
+      <!-- 1. Calificación de Leads -->
+      <div class="demo-card">
+        <div class="card-header">
+          <div class="card-icon">🎯</div>
+          <div class="card-meta">
+            <div class="card-title">Calificación de Leads</div>
+            <div class="card-desc">La IA analiza un prospecto y decide si es cliente potencial.</div>
+          </div>
+          <div class="card-price">$3,000</div>
+        </div>
+        <div class="card-body">
+          <label>Nombre del prospecto</label>
+          <input type="text" id="lead-nombre" placeholder="Ej: María García" />
+          <label>Negocio / Empresa</label>
+          <input type="text" id="lead-negocio" placeholder="Ej: Tienda Ropa Bella" />
+          <label>Mensaje del prospecto</label>
+          <textarea id="lead-mensaje" placeholder="Ej: Hola, tengo una tienda de ropa y quiero más clientes por Instagram..."></textarea>
+          <button class="btn-run" id="lead-btn" onclick="runLeadQual()">Calificar con IA →</button>
+          <div class="spinner-text" id="lead-spinner">Analizando prospecto...</div>
+          <div class="lead-verdict" id="lead-result">
+            <div class="verdict-row">
+              <span class="verdict-icon" id="lead-icon"></span>
+              <span class="verdict-title" id="lead-title"></span>
+              <span class="verdict-prio" id="lead-prio"></span>
+            </div>
+            <div class="verdict-razon" id="lead-razon"></div>
+            <div class="verdict-respuesta-label">Respuesta sugerida</div>
+            <div class="verdict-respuesta" id="lead-respuesta"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2. Pipeline de Ventas -->
+      <div class="demo-card">
+        <div class="card-header">
+          <div class="card-icon">🚀</div>
+          <div class="card-meta">
+            <div class="card-title">Pipeline de Ventas</div>
+            <div class="card-desc">Genera una secuencia completa de seguimiento para un lead.</div>
+          </div>
+          <div class="card-price">$7,500</div>
+        </div>
+        <div class="card-body">
+          <label>Tipo de negocio</label>
+          <input type="text" id="pipe-negocio" placeholder="Ej: Clínica dental en Ciudad de Panamá" />
+          <label>Problema principal del cliente</label>
+          <textarea id="pipe-problema" placeholder="Ej: Tiene muchos pacientes que agendan cita pero no llegan el día de la cita..." style="height:70px;"></textarea>
+          <button class="btn-run" id="pipe-btn" onclick="runPipeline()">Generar Pipeline →</button>
+          <div class="spinner-text" id="pipe-spinner">Construyendo secuencia...</div>
+          <div class="result-box" id="pipe-result">
+            <div class="result-label">Secuencia de seguimiento</div>
+            <div id="pipe-text"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3. Nurturing WhatsApp -->
+      <div class="demo-card">
+        <div class="card-header">
+          <div class="card-icon">💬</div>
+          <div class="card-meta">
+            <div class="card-title">Nurturing WhatsApp</div>
+            <div class="card-desc">Escribe como cliente — el bot responde como si fuera de la empresa.</div>
+          </div>
+          <div class="card-price">$3,000</div>
+        </div>
+        <div class="card-body">
+          <label>Tipo de negocio del cliente</label>
+          <input type="text" id="nurt-negocio" placeholder="Ej: Spa de belleza" />
+          <label>Mensaje del cliente (tú eres el cliente)</label>
+          <textarea id="nurt-mensaje" placeholder="Ej: Hola buenas, cuánto cuesta el masaje relajante y tienen disponibilidad este sábado?" style="height:75px;"></textarea>
+          <button class="btn-run" id="nurt-btn" onclick="runNurturing()">Ver respuesta del bot →</button>
+          <div class="spinner-text" id="nurt-spinner">Generando respuesta...</div>
+          <div class="result-box" id="nurt-result">
+            <div class="result-label">Bot responde</div>
+            <div id="nurt-text"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 4. Generación de Contenido -->
+      <div class="demo-card">
+        <div class="card-header">
+          <div class="card-icon">✍️</div>
+          <div class="card-meta">
+            <div class="card-title">Generación de Contenido</div>
+            <div class="card-desc">Post listo para publicar en redes sociales, optimizado por IA.</div>
+          </div>
+          <div class="card-price">$3,000</div>
+        </div>
+        <div class="card-body">
+          <label>Negocio / Nicho</label>
+          <input type="text" id="cont-negocio" placeholder="Ej: Clínica dental" />
+          <label>Red social</label>
+          <select id="cont-red">
+            <option value="Instagram">Instagram</option>
+            <option value="Facebook">Facebook</option>
+            <option value="LinkedIn">LinkedIn</option>
+            <option value="TikTok">TikTok</option>
+          </select>
+          <label>Tema o producto a destacar</label>
+          <input type="text" id="cont-tema" placeholder="Ej: Blanqueamiento dental express en 1 hora" />
+          <button class="btn-run" id="cont-btn" onclick="runContenido()">Generar post →</button>
+          <div class="spinner-text" id="cont-spinner">Escribiendo post...</div>
+          <div class="result-box" id="cont-result">
+            <div class="result-label">Post generado</div>
+            <div id="cont-text"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 5. Reporte Semanal -->
+      <div class="demo-card">
+        <div class="card-header">
+          <div class="card-icon">📊</div>
+          <div class="card-meta">
+            <div class="card-title">Reporte Semanal</div>
+            <div class="card-desc">Ingresa métricas crudas y la IA genera el resumen ejecutivo.</div>
+          </div>
+          <div class="card-price">$1,000</div>
+        </div>
+        <div class="card-body">
+          <label>Nombre del cliente / negocio</label>
+          <input type="text" id="rep-cliente" placeholder="Ej: Farmacia San José" />
+          <label>Métricas de la semana (texto libre)</label>
+          <textarea id="rep-metricas" placeholder="Ej: 142 mensajes recibidos, 38 citas agendadas, 12 clientes no llegaron, 6 reseñas nuevas en Google, ventas $4,200..." style="height:85px;"></textarea>
+          <button class="btn-run" id="rep-btn" onclick="runReporte()">Generar reporte →</button>
+          <div class="spinner-text" id="rep-spinner">Elaborando reporte...</div>
+          <div class="result-box" id="rep-result">
+            <div class="result-label">Reporte ejecutivo</div>
+            <div id="rep-text"></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ── CANVAS ANIMATION ──────────────────────────────────────────────────── -->
+  <script>
+    (function () {
+      const canvas = document.getElementById('network-canvas');
+      const ctx = canvas.getContext('2d');
+      let W, H, nodes = [];
+      const NODE_COUNT = 70;
+      const MAX_DIST = 180;
+      const SPEED = 0.4;
+
+      function resize() {
+        W = canvas.width = window.innerWidth;
+        H = canvas.height = window.innerHeight;
+      }
+
+      function initNodes() {
+        nodes = [];
+        for (let i = 0; i < NODE_COUNT; i++) {
+          nodes.push({
+            x: Math.random() * W,
+            y: Math.random() * H,
+            vx: (Math.random() - 0.5) * SPEED,
+            vy: (Math.random() - 0.5) * SPEED,
+            r: Math.random() * 2 + 1.2,
+            opacity: Math.random() * 0.5 + 0.4,
+          });
+        }
+      }
+
+      function draw() {
+        ctx.clearRect(0, 0, W, H);
+
+        // connections
+        for (let i = 0; i < nodes.length; i++) {
+          for (let j = i + 1; j < nodes.length; j++) {
+            const dx = nodes[j].x - nodes[i].x;
+            const dy = nodes[j].y - nodes[i].y;
+            const dist = Math.sqrt(dx * dx + dy * dy);
+            if (dist < MAX_DIST) {
+              const alpha = (1 - dist / MAX_DIST) * 0.35;
+              const gradient = ctx.createLinearGradient(nodes[i].x, nodes[i].y, nodes[j].x, nodes[j].y);
+              gradient.addColorStop(0, `rgba(99,102,241,${alpha})`);
+              gradient.addColorStop(1, `rgba(96,165,250,${alpha})`);
+              ctx.beginPath();
+              ctx.moveTo(nodes[i].x, nodes[i].y);
+              ctx.lineTo(nodes[j].x, nodes[j].y);
+              ctx.strokeStyle = gradient;
+              ctx.lineWidth = 0.8;
+              ctx.stroke();
+            }
+          }
+        }
+
+        // nodes
+        nodes.forEach(n => {
+          // glow
+          const grd = ctx.createRadialGradient(n.x, n.y, 0, n.x, n.y, n.r * 8);
+          grd.addColorStop(0, `rgba(99,102,241,${n.opacity * 0.6})`);
+          grd.addColorStop(1, 'rgba(99,102,241,0)');
+          ctx.beginPath();
+          ctx.arc(n.x, n.y, n.r * 8, 0, Math.PI * 2);
+          ctx.fillStyle = grd;
+          ctx.fill();
+
+          // core
+          ctx.beginPath();
+          ctx.arc(n.x, n.y, n.r, 0, Math.PI * 2);
+          ctx.fillStyle = `rgba(180,190,255,${n.opacity})`;
+          ctx.fill();
+        });
+      }
+
+      function update() {
+        nodes.forEach(n => {
+          n.x += n.vx;
+          n.y += n.vy;
+          if (n.x < 0 || n.x > W) n.vx *= -1;
+          if (n.y < 0 || n.y > H) n.vy *= -1;
+        });
+      }
+
+      function loop() {
+        update();
+        draw();
+        requestAnimationFrame(loop);
+      }
+
+      window.addEventListener('resize', () => { resize(); });
+      resize();
+      initNodes();
+      loop();
+    })();
+
+    // smooth scroll
+    document.querySelector('.btn-primary').addEventListener('click', function(e) {
+      e.preventDefault();
+      document.getElementById('biblioteca').scrollIntoView({ behavior: 'smooth' });
+    });
+  </script>
+
+  <!-- ── AI DEMOS ──────────────────────────────────────────────────────────── -->
+  <script>
+    async function groq(prompt) {
+      const res = await fetch('/api/groq', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          model: 'llama-3.3-70b-versatile',
+          messages: [{ role: 'user', content: prompt }],
+          temperature: 0.7
+        })
+      });
+      const data = await res.json();
+      return data.choices[0].message.content;
+    }
+
+    function setLoading(btnId, spinnerId, loading) {
+      const btn = document.getElementById(btnId);
+      const sp = document.getElementById(spinnerId);
+      btn.disabled = loading;
+      loading ? sp.classList.add('show') : sp.classList.remove('show');
+    }
+
+    // ── 1. Lead Qualification ──────────────────────────────────────────────
+    async function runLeadQual() {
+      const nombre = document.getElementById('lead-nombre').value;
+      const negocio = document.getElementById('lead-negocio').value;
+      const mensaje = document.getElementById('lead-mensaje').value;
+      if (!mensaje.trim()) { alert('Escribe el mensaje del prospecto.'); return; }
+      setLoading('lead-btn', 'lead-spinner', true);
+      const result = document.getElementById('lead-result');
+      result.classList.remove('show', 'calificado', 'no-calificado');
+      try {
+        const prompt = `Eres un calificador de leads para una agencia de marketing digital en Panama. Analiza este prospecto y responde SOLO con un JSON valido sin markdown: {"calificado":true/false,"prioridad":"alta/media/baja","razon":"string corto","respuesta":"mensaje personalizado en espanol para enviarle al lead"}
+
+Nombre: ${nombre || 'No indicado'}
+Negocio: ${negocio || 'No indicado'}
+Mensaje: ${mensaje}`;
+        const raw = await groq(prompt);
+        const clean = raw.replace(/```json\n?/g,'').replace(/```/g,'').trim();
+        const cal = JSON.parse(clean);
+        result.className = 'lead-verdict show ' + (cal.calificado ? 'calificado' : 'no-calificado');
+        document.getElementById('lead-icon').textContent = cal.calificado ? '✅' : '❌';
+        document.getElementById('lead-title').textContent = cal.calificado ? 'Lead Calificado' : 'Lead No Calificado';
+        document.getElementById('lead-razon').textContent = cal.razon || '';
+        document.getElementById('lead-respuesta').textContent = cal.respuesta || '';
+        const prioEl = document.getElementById('lead-prio');
+        prioEl.textContent = 'Prioridad ' + (cal.prioridad || '');
+        prioEl.className = 'verdict-prio prio-' + (cal.prioridad || 'baja');
+      } catch(e) { alert('Error al conectar. Intenta de nuevo.'); }
+      finally { setLoading('lead-btn', 'lead-spinner', false); }
+    }
+
+    // ── 2. Pipeline de Ventas ─────────────────────────────────────────────
+    async function runPipeline() {
+      const negocio = document.getElementById('pipe-negocio').value;
+      const problema = document.getElementById('pipe-problema').value;
+      if (!negocio.trim()) { alert('Escribe el tipo de negocio.'); return; }
+      setLoading('pipe-btn', 'pipe-spinner', true);
+      document.getElementById('pipe-result').classList.remove('show');
+      try {
+        const prompt = `Eres un experto en automatizacion de ventas. Para el siguiente negocio, crea una secuencia de seguimiento de 5 pasos via WhatsApp (Dia 1, Dia 3, Dia 7, Dia 14, Dia 30). Cada mensaje debe ser corto, personalizado y orientado a conversión. Usa emojis sutiles. Responde en espanol.
+
+Negocio: ${negocio}
+Problema del cliente: ${problema || 'Capturar leads y convertirlos en clientes'}`;
+        const text = await groq(prompt);
+        document.getElementById('pipe-text').textContent = text;
+        document.getElementById('pipe-result').classList.add('show');
+      } catch(e) { alert('Error al conectar. Intenta de nuevo.'); }
+      finally { setLoading('pipe-btn', 'pipe-spinner', false); }
+    }
+
+    // ── 3. Nurturing WhatsApp ─────────────────────────────────────────────
+    async function runNurturing() {
+      const negocio = document.getElementById('nurt-negocio').value;
+      const mensaje = document.getElementById('nurt-mensaje').value;
+      if (!mensaje.trim()) { alert('Escribe el mensaje del cliente.'); return; }
+      setLoading('nurt-btn', 'nurt-spinner', true);
+      document.getElementById('nurt-result').classList.remove('show');
+      try {
+        const prompt = `Eres un bot de WhatsApp de atención al cliente para un negocio tipo: ${negocio || 'negocio local'}. Responde al siguiente mensaje del cliente de manera cálida, profesional y orientada a cerrar la venta o agendar cita. Sé conciso (máximo 4 líneas). Usa emojis naturales. Responde en espanol.
+
+Cliente dice: "${mensaje}"`;
+        const text = await groq(prompt);
+        document.getElementById('nurt-text').textContent = text;
+        document.getElementById('nurt-result').classList.add('show');
+      } catch(e) { alert('Error al conectar. Intenta de nuevo.'); }
+      finally { setLoading('nurt-btn', 'nurt-spinner', false); }
+    }
+
+    // ── 4. Generación de Contenido ────────────────────────────────────────
+    async function runContenido() {
+      const negocio = document.getElementById('cont-negocio').value;
+      const red = document.getElementById('cont-red').value;
+      const tema = document.getElementById('cont-tema').value;
+      if (!negocio.trim() || !tema.trim()) { alert('Completa negocio y tema.'); return; }
+      setLoading('cont-btn', 'cont-spinner', true);
+      document.getElementById('cont-result').classList.remove('show');
+      try {
+        const prompt = `Crea un post de ${red} para el siguiente negocio. Debe ser autentico, con gancho inicial fuerte, emojis estrategicos y call to action claro. Formato listo para copiar y pegar. En espanol.
+
+Negocio: ${negocio}
+Tema/Producto: ${tema}`;
+        const text = await groq(prompt);
+        document.getElementById('cont-text').textContent = text;
+        document.getElementById('cont-result').classList.add('show');
+      } catch(e) { alert('Error al conectar. Intenta de nuevo.'); }
+      finally { setLoading('cont-btn', 'cont-spinner', false); }
+    }
+
+    // ── 5. Reporte Semanal ────────────────────────────────────────────────
+    async function runReporte() {
+      const cliente = document.getElementById('rep-cliente').value;
+      const metricas = document.getElementById('rep-metricas').value;
+      if (!metricas.trim()) { alert('Ingresa las métricas de la semana.'); return; }
+      setLoading('rep-btn', 'rep-spinner', true);
+      document.getElementById('rep-result').classList.remove('show');
+      try {
+        const prompt = `Eres un consultor de negocios. Genera un reporte semanal ejecutivo profesional para el siguiente cliente. Incluye: resumen ejecutivo, puntos clave, logros, areas de mejora y recomendacion de accion para la proxima semana. Usa formato limpio con secciones. En espanol.
+
+Cliente: ${cliente || 'Cliente'}
+Metricas de la semana: ${metricas}`;
+        const text = await groq(prompt);
+        document.getElementById('rep-text').textContent = text;
+        document.getElementById('rep-result').classList.add('show');
+      } catch(e) { alert('Error al conectar. Intenta de nuevo.'); }
+      finally { setLoading('rep-btn', 'rep-spinner', false); }
+    }
+  </script>
+</body>
+</html>
