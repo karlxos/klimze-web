@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1080">
+<title>klimze — C1 S3</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    width: 1080px;
+    height: 1080px;
+    overflow: hidden;
+    background-color: #020202;
+    font-family: 'Inter', system-ui, sans-serif;
+    color: #F5EDF0;
+    position: relative;
+  }
+  .glow {
+    position: absolute;
+    width: 800px; height: 800px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(147,225,216,0.06) 0%, transparent 70%);
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+  }
+  .top-line {
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 1px; background: #93E1D8;
+  }
+  .brand {
+    position: absolute;
+    bottom: 48px; left: 54px;
+    font-size: 18px; font-weight: 900;
+    color: #93E1D8;
+  }
+  .counter {
+    position: absolute;
+    bottom: 48px; right: 54px;
+    font-size: 16px; font-weight: 500;
+    color: rgba(245,237,240,0.45); letter-spacing: 0.04em;
+  }
+  .content {
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 72px 80px 120px 80px;
+  }
+  .label {
+    font-size: 13px; font-weight: 700;
+    color: #93E1D8; letter-spacing: 0.18em;
+    text-transform: uppercase; margin-bottom: 44px;
+  }
+  .stat-blocks {
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+    margin-bottom: 48px;
+  }
+  .stat-block {
+    display: flex;
+    align-items: center;
+    gap: 32px;
+    background: #0d0d0d;
+    border: 1px solid rgba(147,225,216,0.12);
+    border-radius: 12px;
+    padding: 28px 36px;
+  }
+  .stat-number {
+    font-size: 68px; font-weight: 900;
+    color: #93E1D8; letter-spacing: -0.03em;
+    min-width: 200px;
+    line-height: 1;
+    text-shadow: 0 0 40px rgba(147,225,216,0.25);
+  }
+  .stat-desc {
+    font-size: 22px; font-weight: 500;
+    color: #F5EDF0; line-height: 1.4;
+  }
+  .footnote {
+    font-size: 16px; font-weight: 400;
+    color: rgba(245,237,240,0.45);
+    padding-left: 20px;
+    border-left: 2px solid rgba(147,225,216,0.35);
+  }
+</style>
+</head>
+<body>
+  <div class="glow"></div>
+  <div class="top-line"></div>
+
+  <div class="content">
+    <div class="label">Las 3 causas</div>
+
+    <div class="stat-blocks">
+      <div class="stat-block">
+        <div class="stat-number">67%</div>
+        <div class="stat-desc">de los no-shows son por olvido</div>
+      </div>
+      <div class="stat-block">
+        <div class="stat-number">24%</div>
+        <div class="stat-desc">cancelan mentalmente pero nunca avisan</div>
+      </div>
+      <div class="stat-block">
+        <div class="stat-number">9%</div>
+        <div class="stat-desc">tuvieron un problema real el día anterior</div>
+      </div>
+    </div>
+
+    <div class="footnote">Solo la primera causa se puede prevenir con recordatorios.</div>
+  </div>
+
+  <div class="brand">klimze.</div>
+  <div class="counter">3/5 &rarr;</div>
+</body>
+</html>

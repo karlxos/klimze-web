@@ -1,0 +1,17 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "instagram-posts",
+      "runtimeExecutable": "npx",
+      "runtimeArgs": ["serve", "instagram-posts", "-p", "4200", "--no-clipboard"],
+      "port": 4200
+    },
+    {
+      "name": "partnership-deck",
+      "runtimeExecutable": "npx",
+      "runtimeArgs": ["serve", "public", "-p", "4201", "--no-clipboard"],
+      "port": 4201
+    }
+  ]
+}

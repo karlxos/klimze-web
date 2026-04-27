@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=1080">
+  <title>Post 2 Slide 3 - Tus números</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      width: 1080px;
+      height: 1080px;
+      overflow: hidden;
+      background: #020202;
+      font-family: 'Inter', system-ui, sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .canvas {
+      position: relative;
+      width: 1080px;
+      height: 1080px;
+      background: #020202;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+
+    /* Top line */
+    .canvas::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent 0%, #93E1D8 30%, #93E1D8 70%, transparent 100%);
+      z-index: 10;
+    }
+
+    /* Bottom glow */
+    .glow {
+      position: absolute;
+      bottom: -60px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 900px;
+      height: 600px;
+      background: radial-gradient(ellipse at center bottom, rgba(147, 225, 216, 0.11) 0%, rgba(147, 225, 216, 0.04) 40%, transparent 70%);
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    /* CTA glow */
+    .glow-cta {
+      position: absolute;
+      bottom: 280px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 500px;
+      height: 200px;
+      background: radial-gradient(ellipse at center, rgba(147, 225, 216, 0.15) 0%, transparent 70%);
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .content {
+      position: relative;
+      z-index: 2;
+      width: 860px;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0;
+    }
+
+    .label {
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: #93E1D8;
+      margin-bottom: 52px;
+    }
+
+    .headline {
+      font-size: 80px;
+      font-weight: 900;
+      line-height: 1.0;
+      color: #F5EDF0;
+      letter-spacing: -0.025em;
+      margin-bottom: 32px;
+    }
+
+    .subtext {
+      font-size: 26px;
+      font-weight: 400;
+      line-height: 1.5;
+      color: rgba(245, 237, 240, 0.50);
+      margin-bottom: 72px;
+    }
+
+    .cta-button {
+      display: inline-flex;
+      align-items: center;
+      gap: 0;
+      background: #93E1D8;
+      color: #020202;
+      font-size: 22px;
+      font-weight: 700;
+      padding: 24px 52px;
+      border-radius: 6px;
+      letter-spacing: -0.01em;
+      /* Inner glow */
+      box-shadow: 0 0 40px rgba(147, 225, 216, 0.25), 0 0 80px rgba(147, 225, 216, 0.10), inset 0 1px 0 rgba(255,255,255,0.15);
+    }
+
+    /* Slide indicator */
+    .slide-indicator {
+      position: absolute;
+      bottom: 64px;
+      right: 64px;
+      font-size: 15px;
+      font-weight: 500;
+      color: rgba(147, 225, 216, 0.45);
+      letter-spacing: 0.04em;
+      z-index: 2;
+    }
+
+    .brand-mark {
+      position: absolute;
+      bottom: 64px;
+      left: 110px;
+      font-size: 14px;
+      font-weight: 500;
+      color: rgba(147, 225, 216, 0.18);
+      letter-spacing: 0.05em;
+      z-index: 2;
+    }
+  </style>
+</head>
+<body>
+  <div class="canvas">
+    <div class="glow"></div>
+    <div class="glow-cta"></div>
+
+    <div class="content">
+      <div class="label">Ahora con tus números</div>
+      <div class="headline">&iquest;Cu&aacute;nto pierde<br>tu cl&iacute;nica?</div>
+      <div class="subtext">Pon&eacute;le tus n&uacute;meros. Son 30 segundos.</div>
+      <div class="cta-button">Calcul&aacute; gratis &nbsp;&rarr;&nbsp; klimze.app</div>
+    </div>
+
+    <div class="brand-mark">klimze</div>
+    <div class="slide-indicator">3/3</div>
+  </div>
+</body>
+</html>

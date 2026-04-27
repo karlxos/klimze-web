@@ -1,0 +1,86 @@
+{
+  "name": "Demo: Calificacion de Leads con IA",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "lead",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "node-1",
+      "name": "Recibir Lead",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [100, 300],
+      "webhookId": "daebd748-af2c-48e0-8dca-b20b4b3da27a"
+    },
+    {
+      "parameters": {
+        "jsCode": "const nombre = $input.first().json.nombre || 'Desconocido';\nconst telefono = $input.first().json.telefono || 'No proporcionado';\nconst mensaje = $input.first().json.mensaje || '';\n\nconst prompt = 'Eres un calificador de leads para una agencia de marketing digital en Panama. Analiza este prospecto y responde SOLO con un JSON valido sin markdown con estos campos exactos: calificado (true o false), prioridad (alta, media o baja), razon (string corto), respuesta (mensaje personalizado en espanol para enviarle al lead).\\n\\nNombre: ' + nombre + '\\nTelefono: ' + telefono + '\\nMensaje: ' + mensaje;\n\nconst bodyString = JSON.stringify({\n  contents: [{ parts: [{ text: prompt }] }]\n});\n\nreturn [{ json: { nombre, telefono, mensaje, bodyString } }];"
+      },
+      "id": "node-code",
+      "name": "Preparar Prompt",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [300, 300]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=AIzaSyA3tIRyfbHI1GAH9oYto4vHTJxLPH5sVO0",
+        "sendBody": true,
+        "specifyBody": "string",
+        "body": "={{ $json.bodyString }}",
+        "options": {
+          "allowUnauthorizedCerts": false,
+          "response": {},
+          "redirect": {}
+        }
+      },
+      "id": "node-2",
+      "name": "Calificar con Gemini",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [520, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "const geminiText = $input.first().json.candidates[0].content.parts[0].text;\nlet calificacion;\ntry {\n  const clean = geminiText.replace(/```json\\n?/g, '').replace(/```/g, '').trim();\n  calificacion = JSON.parse(clean);\n} catch(e) {\n  calificacion = { raw: geminiText };\n}\n\nconst leadData = $('Preparar Prompt').first().json;\n\nreturn [{\n  json: {\n    recibido: true,\n    lead: {\n      nombre: leadData.nombre,\n      telefono: leadData.telefono,\n      mensaje: leadData.mensaje\n    },\n    calificacion,\n    timestamp: new Date().toISOString()\n  }\n}];"
+      },
+      "id": "node-parse",
+      "name": "Parsear Resultado",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [740, 300]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ $json }}",
+        "options": {}
+      },
+      "id": "node-3",
+      "name": "Responder",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [960, 300]
+    }
+  ],
+  "connections": {
+    "Recibir Lead": {
+      "main": [[{"node": "Preparar Prompt", "type": "main", "index": 0}]]
+    },
+    "Preparar Prompt": {
+      "main": [[{"node": "Calificar con Gemini", "type": "main", "index": 0}]]
+    },
+    "Calificar con Gemini": {
+      "main": [[{"node": "Parsear Resultado", "type": "main", "index": 0}]]
+    },
+    "Parsear Resultado": {
+      "main": [[{"node": "Responder", "type": "main", "index": 0}]]
+    }
+  },
+  "settings": {"executionOrder": "v1"},
+  "active": false
+}

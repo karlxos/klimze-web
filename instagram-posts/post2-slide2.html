@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=1080">
+  <title>Post 2 Slide 2 - Así se calcula</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      width: 1080px;
+      height: 1080px;
+      overflow: hidden;
+      background: #020202;
+      font-family: 'Inter', system-ui, sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .canvas {
+      position: relative;
+      width: 1080px;
+      height: 1080px;
+      background: #020202;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+
+    /* Top line */
+    .canvas::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent 0%, #93E1D8 30%, #93E1D8 70%, transparent 100%);
+      z-index: 10;
+    }
+
+    /* Background glow */
+    .glow {
+      position: absolute;
+      bottom: 200px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 900px;
+      height: 400px;
+      background: radial-gradient(ellipse at center, rgba(147, 225, 216, 0.07) 0%, transparent 65%);
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .content {
+      position: relative;
+      z-index: 2;
+      width: 900px;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0;
+    }
+
+    .label {
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: #93E1D8;
+      margin-bottom: 68px;
+    }
+
+    /* Formula row */
+    .formula-row {
+      display: flex;
+      align-items: center;
+      gap: 0;
+      width: 100%;
+      margin-bottom: 60px;
+    }
+
+    .formula-block {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+      flex: 1;
+    }
+
+    .formula-value {
+      font-size: 56px;
+      font-weight: 900;
+      color: #93E1D8;
+      letter-spacing: -0.03em;
+      line-height: 1;
+      text-shadow: 0 0 40px rgba(147, 225, 216, 0.2);
+    }
+
+    .formula-label {
+      font-size: 13px;
+      font-weight: 400;
+      color: rgba(245, 237, 240, 0.45);
+      text-align: center;
+      letter-spacing: 0.01em;
+      line-height: 1.4;
+    }
+
+    .operator {
+      font-size: 40px;
+      font-weight: 300;
+      color: rgba(147, 225, 216, 0.30);
+      margin: 0 4px;
+      padding-bottom: 28px; /* align with value baseline */
+      flex-shrink: 0;
+    }
+
+    /* Result row */
+    .result-row {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      gap: 28px;
+      padding-top: 48px;
+      border-top: 1px solid rgba(147, 225, 216, 0.12);
+    }
+
+    .equals-sign {
+      font-size: 64px;
+      font-weight: 300;
+      color: rgba(147, 225, 216, 0.40);
+      line-height: 1;
+      letter-spacing: -0.02em;
+    }
+
+    .result-value {
+      font-size: 104px;
+      font-weight: 900;
+      color: #93E1D8;
+      letter-spacing: -0.04em;
+      line-height: 0.95;
+      text-shadow: 0 0 60px rgba(147, 225, 216, 0.30), 0 0 120px rgba(147, 225, 216, 0.12);
+    }
+
+    .result-label {
+      font-size: 18px;
+      font-weight: 400;
+      color: rgba(245, 237, 240, 0.40);
+      margin-top: 8px;
+    }
+
+    .result-text {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    /* Slide indicator */
+    .slide-indicator {
+      position: absolute;
+      bottom: 64px;
+      right: 64px;
+      font-size: 15px;
+      font-weight: 500;
+      color: rgba(147, 225, 216, 0.45);
+      letter-spacing: 0.04em;
+      z-index: 2;
+    }
+
+    .brand-mark {
+      position: absolute;
+      bottom: 64px;
+      left: 110px;
+      font-size: 14px;
+      font-weight: 500;
+      color: rgba(147, 225, 216, 0.18);
+      letter-spacing: 0.05em;
+      z-index: 2;
+    }
+  </style>
+</head>
+<body>
+  <div class="canvas">
+    <div class="glow"></div>
+
+    <div class="content">
+      <div class="label">Así se calcula</div>
+
+      <div class="formula-row">
+        <div class="formula-block">
+          <div class="formula-value">100</div>
+          <div class="formula-label">citas/semana</div>
+        </div>
+        <div class="operator">&times;</div>
+        <div class="formula-block">
+          <div class="formula-value">20%</div>
+          <div class="formula-label">no llegan</div>
+        </div>
+        <div class="operator">&times;</div>
+        <div class="formula-block">
+          <div class="formula-value">$30</div>
+          <div class="formula-label">por cita</div>
+        </div>
+        <div class="operator">&times;</div>
+        <div class="formula-block">
+          <div class="formula-value">4.3</div>
+          <div class="formula-label">semanas/mes</div>
+        </div>
+      </div>
+
+      <div class="result-row">
+        <div class="equals-sign">=</div>
+        <div class="result-text">
+          <div class="result-value">$2,580</div>
+          <div class="result-label">perdidos al mes</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="brand-mark">klimze</div>
+    <div class="slide-indicator">2/3 &nbsp;&rarr;</div>
+  </div>
+</body>
+</html>

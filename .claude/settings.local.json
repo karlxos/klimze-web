@@ -6,7 +6,10 @@
       "Bash(npx create-next-app@latest klimze-saas --typescript --tailwind --eslint --app --src-dir --import-alias \"@/*\" --no-git)",
       "Bash(npx create-next-app@latest /mnt/c/Users/pc/klimze-saas --typescript --tailwind --eslint --app --src-dir --import-alias \"@/*\" --no-git)",
       "Bash(python3 -c ' *)",
-      "Bash(powershell -Command ' *)"
+      "Bash(powershell -Command ' *)",
+      "mcp__Vibe_Prospecting__autocomplete",
+      "mcp__Vibe_Prospecting__fetch-entities",
+      "WebSearch"
     ]
   }
 }

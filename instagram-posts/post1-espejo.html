@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=1080">
+  <title>Post 1 - El espejo</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      width: 1080px;
+      height: 1080px;
+      overflow: hidden;
+      background: #020202;
+      font-family: 'Inter', system-ui, sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .canvas {
+      position: relative;
+      width: 1080px;
+      height: 1080px;
+      background: #020202;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+
+    /* Top gradient line */
+    .canvas::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent 0%, #93E1D8 30%, #93E1D8 70%, transparent 100%);
+      z-index: 10;
+    }
+
+    /* Radial glow */
+    .glow {
+      position: absolute;
+      top: -180px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 720px;
+      height: 600px;
+      background: radial-gradient(ellipse at center, rgba(147, 225, 216, 0.10) 0%, rgba(147, 225, 216, 0.03) 45%, transparent 70%);
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    /* Secondary glow, more subtle */
+    .glow-secondary {
+      position: absolute;
+      top: 200px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 400px;
+      height: 300px;
+      background: radial-gradient(ellipse at center, rgba(147, 225, 216, 0.04) 0%, transparent 70%);
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .card {
+      position: relative;
+      z-index: 2;
+      width: 860px;
+      background: #0d0d0d;
+      border: 1px solid rgba(147, 225, 216, 0.08);
+      border-radius: 4px;
+      padding: 88px 96px;
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent 0%, #93E1D8 30%, #93E1D8 70%, transparent 100%);
+      border-radius: 4px 4px 0 0;
+    }
+
+    .label {
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: #93E1D8;
+      margin-bottom: 48px;
+    }
+
+    .headline {
+      font-size: 72px;
+      font-weight: 900;
+      line-height: 1.05;
+      color: #F5EDF0;
+      letter-spacing: -0.02em;
+      margin-bottom: 48px;
+    }
+
+    .separator {
+      width: 100%;
+      height: 1px;
+      background: linear-gradient(90deg, rgba(147, 225, 216, 0.3) 0%, rgba(147, 225, 216, 0.05) 100%);
+      margin-bottom: 40px;
+    }
+
+    .subtext {
+      font-size: 24px;
+      font-weight: 400;
+      line-height: 1.5;
+      color: rgba(245, 237, 240, 0.50);
+      margin-bottom: 56px;
+    }
+
+    .cta {
+      font-size: 16px;
+      font-weight: 600;
+      color: #93E1D8;
+      letter-spacing: 0.02em;
+    }
+
+    /* Bottom brand mark */
+    .brand-mark {
+      position: absolute;
+      bottom: 52px;
+      right: 64px;
+      font-size: 14px;
+      font-weight: 500;
+      color: rgba(147, 225, 216, 0.25);
+      letter-spacing: 0.05em;
+      z-index: 2;
+    }
+  </style>
+</head>
+<body>
+  <div class="canvas">
+    <div class="glow"></div>
+    <div class="glow-secondary"></div>
+
+    <div class="card">
+      <div class="label">Para dueños de clínicas</div>
+      <div class="headline">El sistema de<br>agendamiento tradicional<br>tiene una fuga.</div>
+      <div class="subtext">La mayoría de clínicas no la mide.<br>Todas la sienten.</div>
+      <div class="separator"></div>
+      <div class="cta">Calcula cuánto &rarr; klimze.app</div>
+    </div>
+
+    <div class="brand-mark">klimze</div>
+  </div>
+</body>
+</html>
