@@ -37,21 +37,21 @@
     /* ── PRICING CARD ── */
     .pricing-card{
       position:relative;flex:0 0 calc(33.33% - 16px);min-width:280px;max-width:360px;
-      background:rgba(255,255,255,.04);backdrop-filter:blur(22px);-webkit-backdrop-filter:blur(22px);
+      background:rgba(120,130,255,.07);backdrop-filter:blur(28px) saturate(1.4);-webkit-backdrop-filter:blur(28px) saturate(1.4);
       border:none;border-radius:24px;
       padding:36px 28px 28px;display:flex;flex-direction:column;
       transition:all .3s ease;
-      box-shadow:0 8px 32px rgba(0,0,0,.35);
+      box-shadow:0 8px 40px rgba(0,0,0,.4),inset 0 1px 0 rgba(255,255,255,.06);
     }
     .pricing-card:hover{
-      background:rgba(255,255,255,.07);transform:translateY(-6px);
-      box-shadow:0 28px 70px rgba(0,0,0,.5),0 0 40px rgba(99,102,241,.1)
+      background:rgba(120,130,255,.11);transform:translateY(-6px);
+      box-shadow:0 28px 70px rgba(0,0,0,.5),0 0 40px rgba(99,102,241,.12),inset 0 1px 0 rgba(255,255,255,.08)
     }
     .pricing-card.popular{
-      background:rgba(99,102,241,.12);
-      box-shadow:0 0 60px rgba(99,102,241,.15),0 8px 40px rgba(0,0,0,.4)
+      background:rgba(99,102,241,.16);backdrop-filter:blur(28px) saturate(1.6);-webkit-backdrop-filter:blur(28px) saturate(1.6);
+      box-shadow:0 0 60px rgba(99,102,241,.2),0 8px 40px rgba(0,0,0,.45),inset 0 1px 0 rgba(129,140,248,.15)
     }
-    .pricing-card.popular:hover{background:rgba(99,102,241,.16);box-shadow:0 28px 90px rgba(0,0,0,.55),0 0 80px rgba(99,102,241,.25)}
+    .pricing-card.popular:hover{background:rgba(99,102,241,.22);box-shadow:0 28px 90px rgba(0,0,0,.55),0 0 80px rgba(99,102,241,.3),inset 0 1px 0 rgba(129,140,248,.2)}
 
     .popular-badge{
       position:absolute;top:-14px;left:50%;transform:translateX(-50%);
@@ -206,7 +206,7 @@
   }
   function update(){nodes.forEach(n=>{n.x+=n.vx;n.y+=n.vy;if(n.x<0||n.x>W)n.vx*=-1;if(n.y<0||n.y>H)n.vy*=-1})}
   function loop(){update();draw();requestAnimationFrame(loop)}
-  window.addEventListener('scroll',()=>{const max=document.body.scrollHeight-innerHeight;c.style.opacity=max>0?Math.max(0.2,1-scrollY/max*0.8):1});
+  window.addEventListener('scroll',()=>{const max=document.body.scrollHeight-innerHeight;const b=max>0?Math.max(0.2,1-scrollY/max*0.8):1;c.style.filter=`brightness(${b})`});
   addEventListener('resize',()=>{resize();init()});
   resize();init();loop();
 })();
