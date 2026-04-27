@@ -206,7 +206,7 @@
   }
   function update(){nodes.forEach(n=>{n.x+=n.vx;n.y+=n.vy;if(n.x<0||n.x>W)n.vx*=-1;if(n.y<0||n.y>H)n.vy*=-1})}
   function loop(){update();draw();requestAnimationFrame(loop)}
-  window.addEventListener('scroll',()=>{const max=document.body.scrollHeight-innerHeight;c.style.opacity=max>0?Math.max(0,1-scrollY/max):1});
+  window.addEventListener('scroll',()=>{const max=document.body.scrollHeight-innerHeight;c.style.opacity=max>0?Math.max(0.2,1-scrollY/max*0.8):1});
   addEventListener('resize',()=>{resize();init()});
   resize();init();loop();
 })();
