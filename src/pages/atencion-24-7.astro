@@ -1,0 +1,265 @@
+---
+---
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Atención 24/7 — Demo Klimze</title>
+  <link rel="stylesheet" href="/demo.css" />
+  <style>
+    /* Metrics dashboard */
+    .metrics-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:16px}
+    @media(min-width:560px){.metrics-grid{grid-template-columns:repeat(4,1fr)}}
+    .metric-card{background:#0a0a14;border-radius:12px;padding:14px 12px;text-align:center}
+    .metric-val{font-size:28px;font-weight:900;letter-spacing:-.03em;line-height:1;margin-bottom:4px}
+    .metric-val.green{color:#4ade80}
+    .metric-val.blue{color:#818cf8}
+    .metric-val.yellow{color:#fbbf24}
+    .metric-val.red{color:#f87171}
+    .metric-label{font-size:11px;color:rgba(255,255,255,.35);line-height:1.35}
+
+    .ticket-wrap{display:flex;flex-direction:column;gap:10px;margin-bottom:16px}
+    .ticket{background:#0a0a14;border-radius:12px;padding:12px 14px;display:flex;gap:12px;align-items:flex-start;opacity:0;transform:translateY(6px);transition:all .4s}
+    .ticket.show{opacity:1;transform:none}
+    .ticket-icon{font-size:20px;flex-shrink:0;margin-top:1px}
+    .ticket-body{flex:1}
+    .ticket-title{font-size:13px;font-weight:600;margin-bottom:3px}
+    .ticket-msg{font-size:12px;color:rgba(255,255,255,.45);line-height:1.45}
+    .ticket-badge{display:inline-block;font-size:10px;font-weight:700;padding:2px 9px;border-radius:20px;margin-top:5px}
+    .badge-resolved{background:rgba(74,222,128,.12);color:#4ade80}
+    .badge-pending{background:rgba(251,191,36,.12);color:#fbbf24}
+    .badge-escalated{background:rgba(99,102,241,.15);color:#818cf8}
+    .ticket-time{font-size:11px;color:rgba(255,255,255,.2);white-space:nowrap;flex-shrink:0}
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="demo-nav">
+  <a href="/demos" class="back-link">
+    <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
+    Demos
+  </a>
+  <div class="nav-demo-name">🌙 Atención 24/7</div>
+  <div class="nav-price">$2,500/mes</div>
+</nav>
+
+<!-- HEADER -->
+<header class="demo-header">
+  <canvas id="mini-canvas"></canvas>
+  <div class="demo-header-content">
+    <div class="demo-header-icon">🌙</div>
+    <h1>Atención <span>24/7</span></h1>
+    <p>Escribe como si fueras un cliente a las 2am. El bot responde al instante, resuelve la consulta y solo escala a humano si es estrictamente necesario.</p>
+    <div style="display:flex;flex-direction:column;gap:10px;width:100%;max-width:340px;margin-top:8px">
+      <div class="form-row" style="margin:0"><label>Tipo de negocio</label><input id="inp-biz" placeholder="Ej: Clínica dental, E-commerce, Hotel..." /></div>
+      <button class="btn-start-main" id="start-btn" onclick="initDemo()">▶ Iniciar simulación</button>
+    </div>
+  </div>
+</header>
+
+<!-- DEMO AREA -->
+<div class="demo-container">
+  <div id="demo-area" style="display:none">
+    <div class="steps-bar">
+      <div class="step-item current" id="step-1">1. Atención en vivo</div>
+      <div class="step-item" id="step-2">2. Resumen del caso</div>
+      <div class="step-item" id="step-3">3. Panel del día</div>
+    </div>
+
+    <!-- Phase 1: Live chat -->
+    <div class="phase active" id="phase-1">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
+        <div style="font-size:11px;color:rgba(255,255,255,.3);font-weight:600;text-transform:uppercase;letter-spacing:.5px">🕐 <span id="clock"></span> — Bot activo</div>
+        <div style="width:6px;height:6px;background:#4ade80;border-radius:50%;animation:pulse2 1.5s infinite"></div>
+      </div>
+      <style>@keyframes pulse2{0%,100%{opacity:1}50%{opacity:.3}}</style>
+      <div class="chat-window">
+        <div class="chat-header">
+          <div class="chat-avatar">🤖</div>
+          <div>
+            <div class="chat-bot-name" id="bot-name">Asistente virtual</div>
+            <div class="chat-bot-status"><span class="online-dot"></span>Responde en segundos</div>
+          </div>
+        </div>
+        <div class="chat-messages" id="msgs"></div>
+        <div class="chat-input-row">
+          <input class="chat-input" id="chat-input" placeholder="Escribe como si fueras un cliente..." onkeydown="if(event.key==='Enter')sendMsg()" />
+          <button class="chat-send" id="chat-send" onclick="sendMsg()">
+            <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="white" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>
+          </button>
+        </div>
+      </div>
+      <div style="text-align:center;margin-top:14px">
+        <button class="action-btn ghost" onclick="closeTicket()">Ver resumen del caso →</button>
+      </div>
+    </div>
+
+    <!-- Phase 2: Ticket summary -->
+    <div class="phase" id="phase-2">
+      <div class="analysis-wrap">
+        <div class="analysis-ring"></div>
+        <div class="analysis-label">Clasificando y cerrando el caso...</div>
+        <div class="analysis-steps">
+          <div class="astep" id="as-1"><div class="astep-dot"></div>Clasificando tipo de consulta</div>
+          <div class="astep" id="as-2"><div class="astep-dot"></div>Evaluando si requiere escalación</div>
+          <div class="astep" id="as-3"><div class="astep-dot"></div>Guardando en CRM</div>
+          <div class="astep" id="as-4"><div class="astep-dot"></div>Generando resumen para el equipo</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Phase 3: Daily dashboard -->
+    <div class="phase" id="phase-3">
+      <div class="tag-label" style="margin-bottom:14px">📊 Panel de atención — hoy</div>
+      <div class="metrics-grid" id="metrics-grid"></div>
+      <div class="tag-label" style="margin-bottom:10px">🎫 Últimas consultas resueltas</div>
+      <div class="ticket-wrap" id="ticket-wrap"></div>
+      <button class="reset-btn" onclick="resetDemo()">↺ Reiniciar simulación</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  const c=document.getElementById('mini-canvas'),ctx=c.getContext('2d');
+  let W,H,nodes=[];const N=40,DIST=140,SPD=0.35;
+  function resize(){W=c.width=c.offsetWidth;H=c.height=c.offsetHeight}
+  function init(){nodes=[];for(let i=0;i<N;i++)nodes.push({x:Math.random()*W,y:Math.random()*H,vx:(Math.random()-.5)*SPD,vy:(Math.random()-.5)*SPD,r:Math.random()*1.5+1,o:Math.random()*.4+.3})}
+  function draw(){ctx.clearRect(0,0,W,H);for(let i=0;i<nodes.length;i++)for(let j=i+1;j<nodes.length;j++){const dx=nodes[j].x-nodes[i].x,dy=nodes[j].y-nodes[i].y,d=Math.sqrt(dx*dx+dy*dy);if(d<DIST){const a=(1-d/DIST)*.28;ctx.beginPath();ctx.moveTo(nodes[i].x,nodes[i].y);ctx.lineTo(nodes[j].x,nodes[j].y);ctx.strokeStyle=`rgba(99,102,241,${a})`;ctx.lineWidth=.7;ctx.stroke()}}nodes.forEach(n=>{ctx.beginPath();ctx.arc(n.x,n.y,n.r,0,Math.PI*2);ctx.fillStyle=`rgba(180,190,255,${n.o})`;ctx.fill()})}
+  function update(){nodes.forEach(n=>{n.x+=n.vx;n.y+=n.vy;if(n.x<0||n.x>W)n.vx*=-1;if(n.y<0||n.y>H)n.vy*=-1})}
+  function loop(){update();draw();requestAnimationFrame(loop)}
+  new ResizeObserver(()=>{resize();init()}).observe(c.parentElement);
+  resize();init();loop();
+})();
+
+async function groq(prompt,temp=0.7){
+  const r=await fetch('/api/groq',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'llama-3.3-70b-versatile',messages:[{role:'user',content:prompt}],temperature:temp})});
+  const d=await r.json();return d.choices[0].message.content;
+}
+function sleep(ms){return new Promise(r=>setTimeout(r,ms))}
+function setPhase(n){
+  document.querySelectorAll('.phase').forEach((p,i)=>p.classList.toggle('active',i===n-1));
+  document.querySelectorAll('.step-item').forEach((s,i)=>{s.className='step-item'+(i<n-1?' done':i===n-1?' current':'')});
+}
+async function animateSteps(ids,delay=650){
+  for(const id of ids){await sleep(delay);const el=document.getElementById(id);if(!el)continue;el.classList.add('active');await sleep(delay);el.classList.add('done');el.classList.remove('active')}
+}
+
+// Live clock
+function updateClock(){
+  const now=new Date();
+  document.getElementById('clock').textContent=now.toLocaleTimeString('es',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+}
+setInterval(updateClock,1000);updateClock();
+
+let state={biz:'',history:[],busy:false};
+
+function initDemo(){
+  state.biz=document.getElementById('inp-biz').value||'negocio local';
+  state.history=[];state.busy=false;
+  document.getElementById('bot-name').textContent=`Asistente de ${state.biz}`;
+  document.getElementById('start-btn').style.display='none';
+  document.getElementById('demo-area').style.display='block';
+  document.getElementById('demo-area').scrollIntoView({behavior:'smooth',block:'start'});
+  setPhase(1);
+  setTimeout(()=>botMsg(`¡Hola! 👋 Soy el asistente virtual de ${state.biz}. Estamos disponibles las 24 horas del día. ¿En qué puedo ayudarte?`),700);
+}
+
+function resetDemo(){
+  state={biz:'',history:[],busy:false};
+  document.getElementById('start-btn').style.display='';
+  document.getElementById('demo-area').style.display='none';
+  document.getElementById('msgs').innerHTML='';
+  document.getElementById('chat-input').disabled=false;
+  document.getElementById('chat-input').value='';
+  document.getElementById('chat-send').disabled=false;
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function botMsg(text){
+  const msgs=document.getElementById('msgs');
+  const t=document.createElement('div');t.className='typing';t.innerHTML='<span></span><span></span><span></span>';
+  msgs.appendChild(t);msgs.scrollTop=msgs.scrollHeight;
+  return new Promise(res=>setTimeout(()=>{
+    t.remove();const m=document.createElement('div');m.className='msg bot';m.textContent=text;
+    msgs.appendChild(m);msgs.scrollTop=msgs.scrollHeight;res();
+  },1100));
+}
+function userMsg(text){
+  const msgs=document.getElementById('msgs');
+  const m=document.createElement('div');m.className='msg user';m.textContent=text;
+  msgs.appendChild(m);msgs.scrollTop=msgs.scrollHeight;
+}
+
+async function sendMsg(){
+  if(state.busy)return;
+  const inp=document.getElementById('chat-input');
+  const val=inp.value.trim();if(!val)return;
+  inp.value='';
+  userMsg(val);
+  state.history.push({role:'user',content:val});
+  state.busy=true;
+  document.getElementById('chat-send').disabled=true;
+  const history=state.history.map(m=>`${m.role==='user'?'Cliente':'Bot'}: ${m.content}`).join('\n');
+  const prompt=`Eres el bot de atención al cliente 24/7 de "${state.biz}". Responde de forma rápida, amable y resolutiva. Si el cliente tiene un problema grave o solicita hablar con una persona, indica que escalarás el caso a un agente humano. Máx 3 líneas. Español natural.\n\nConversación:\n${history}`;
+  const reply=await groq(prompt,.65);
+  state.history.push({role:'bot',content:reply});
+  await botMsg(reply);
+  state.busy=false;
+  document.getElementById('chat-send').disabled=false;
+  inp.focus();
+}
+
+async function closeTicket(){
+  setPhase(2);
+  animateSteps(['as-1','as-2','as-3','as-4'],600);
+  const history=state.history.map(m=>`${m.role==='user'?'Cliente':'Bot'}: ${m.content}`).join('\n')||'(sin mensajes)';
+  const prompt=`Analiza esta conversación de soporte para "${state.biz}" y responde SOLO JSON sin markdown:
+{"tipo":"Consulta/Queja/Reserva/Info/Otro","resuelto":true,"escalar":false,"resumen":"1 línea"}
+Conversación:\n${history}`;
+  const raw=await groq(prompt,.3);
+  let ticket;
+  try{ticket=JSON.parse(raw.replace(/```(?:json)?\n?/g,'').replace(/```/g,'').trim())}
+  catch{ticket={tipo:'Consulta',resuelto:true,escalar:false,resumen:'Cliente atendido correctamente por el bot.'}}
+  await sleep(3200);
+  buildDashboard(ticket);
+  setPhase(3);
+}
+
+function buildDashboard(ticket){
+  // Metrics
+  const metrics=[
+    {val:'147',label:'Consultas\nresueltas hoy',cls:'green'},
+    {val:'<3s',label:'Tiempo medio\nde respuesta',cls:'blue'},
+    {val:'94%',label:'Resueltas\nsin humano',cls:'blue'},
+    {val:'2',label:'Escaladas\na agente',cls:'yellow'},
+  ];
+  const mg=document.getElementById('metrics-grid');mg.innerHTML='';
+  metrics.forEach(m=>{
+    const el=document.createElement('div');el.className='metric-card';
+    el.innerHTML=`<div class="metric-val ${m.cls}">${m.val}</div><div class="metric-label">${m.label}</div>`;
+    mg.appendChild(el);
+  });
+
+  // Recent tickets
+  const needsEscalation=ticket.escalar;
+  const tickets=[
+    {icon:'💬',title:'Consulta de horarios',msg:'Cliente preguntó horario de atención y servicios disponibles.',badge:'badge-resolved',time:'Hace 3 min'},
+    {icon:'📦',title:ticket.tipo||'Consulta general',msg:ticket.resumen||'Caso atendido por el bot satisfactoriamente.',badge:needsEscalation?'badge-escalated':'badge-resolved',time:'Ahora'},
+    {icon:'⚠️',title:'Queja — tiempo de espera',msg:'Cliente insatisfecho con espera. Escalado a agente humano.',badge:'badge-escalated',time:'Hace 18 min'},
+    {icon:'📅',title:'Solicitud de cita',msg:'Cliente agendó cita para mañana a las 10am sin intervención humana.',badge:'badge-resolved',time:'Hace 32 min'},
+  ];
+  const tw=document.getElementById('ticket-wrap');tw.innerHTML='';
+  tickets.forEach((t,i)=>{
+    const el=document.createElement('div');el.className='ticket';
+    const badgeText=t.badge==='badge-resolved'?'✓ Resuelto':t.badge==='badge-escalated'?'↑ Escalado':'⏳ Pendiente';
+    el.innerHTML=`<div class="ticket-icon">${t.icon}</div><div class="ticket-body"><div class="ticket-title">${t.title}</div><div class="ticket-msg">${t.msg}</div><span class="ticket-badge ${t.badge}">${badgeText}</span></div><div class="ticket-time">${t.time}</div>`;
+    tw.appendChild(el);
+    setTimeout(()=>el.classList.add('show'),i*200+80);
+  });
+}
+</script>
+</body>
+</html>
