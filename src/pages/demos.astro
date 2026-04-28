@@ -24,6 +24,14 @@
     .btn-hero:hover{background:#5558e8;transform:translateY(-2px);box-shadow:0 0 70px rgba(99,102,241,.6),0 12px 40px rgba(0,0,0,.5)}
     .scroll-hint{color:rgba(255,255,255,.18);font-size:11px;letter-spacing:2px;text-transform:uppercase}
 
+    /* ── STATS STRIP ── */
+    .stats-strip{position:relative;z-index:1;padding:0 24px;margin-bottom:0}
+    .stats-inner{max-width:900px;margin:0 auto;display:flex;align-items:center;justify-content:center;gap:0;background:rgba(99,102,241,.07);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid rgba(99,102,241,.15);border-radius:20px;padding:28px 40px;box-shadow:0 0 60px rgba(99,102,241,.08),inset 0 1px 0 rgba(255,255,255,.05)}
+    .stat-item{flex:1;text-align:center;padding:0 20px}
+    .stat-number{font-size:32px;font-weight:900;letter-spacing:-.03em;background:linear-gradient(135deg,#818cf8,#60a5fa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1}
+    .stat-label{font-size:11px;color:rgba(255,255,255,.35);font-weight:500;margin-top:6px;letter-spacing:.3px}
+    .stat-divider{width:1px;height:40px;background:rgba(255,255,255,.07);flex-shrink:0}
+
     /* ── LIBRARY ── */
     .library{position:relative;z-index:1;padding:110px 24px 140px}
     .library-inner{max-width:1160px;margin:0 auto}
@@ -98,6 +106,36 @@
     <span class="scroll-hint">scroll para explorar</span>
   </div>
 </section>
+
+<!-- ── STATS STRIP ── -->
+<div class="stats-strip">
+  <div class="stats-inner">
+    <div class="stat-item">
+      <div class="stat-number">24/7</div>
+      <div class="stat-label">Sin interrupciones</div>
+    </div>
+    <div class="stat-divider"></div>
+    <div class="stat-item">
+      <div class="stat-number">&lt; 3s</div>
+      <div class="stat-label">Tiempo de respuesta</div>
+    </div>
+    <div class="stat-divider"></div>
+    <div class="stat-item">
+      <div class="stat-number">365</div>
+      <div class="stat-label">Días al año activo</div>
+    </div>
+    <div class="stat-divider"></div>
+    <div class="stat-item">
+      <div class="stat-number">0</div>
+      <div class="stat-label">Días de vacaciones</div>
+    </div>
+    <div class="stat-divider"></div>
+    <div class="stat-item">
+      <div class="stat-number">95%</div>
+      <div class="stat-label">Sin intervención humana</div>
+    </div>
+  </div>
+</div>
 
 <!-- ── LIBRARY ── -->
 <section class="library" id="biblioteca">
