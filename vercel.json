@@ -3,6 +3,10 @@
   "outputDirectory": "dist",
   "framework": "astro",
   "redirects": [
-    { "source": "/", "destination": "/partnership-deck.html", "permanent": false }
+    { "source": "/partnership-deck.html", "destination": "/", "permanent": false },
+    { "source": "/agenda.html", "destination": "/", "permanent": false },
+    { "source": "/whatsapp.html", "destination": "/", "permanent": false },
+    { "source": "/dashboard-preview.html", "destination": "/", "permanent": false },
+    { "source": "/pacientes.html", "destination": "/", "permanent": false }
   ]
 }
