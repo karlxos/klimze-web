@@ -1,26 +1,101 @@
 ---
-import Layout from '../layouts/Layout.astro';
-import Navbar from '../components/Navbar.astro';
-import Hero from '../components/Hero.astro';
-import ROICalculator from '../components/ROICalculator.astro';
-import Features from '../components/Features.astro';
-import HowItWorks from '../components/HowItWorks.astro';
-import Pricing from '../components/Pricing.astro';
-import Contact from '../components/Contact.astro';
-import Footer from '../components/Footer.astro';
-import StarsBackground from '../components/StarsBackground.astro';
 ---
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Klimze — Volvemos pronto</title>
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#06060e;color:#fff;min-height:100vh;display:flex;align-items:center;justify-content:center;overflow:hidden}
 
-<Layout>
-  <StarsBackground />
-  <Navbar />
-  <main>
-    <Hero />
-    <ROICalculator />
-    <Features />
-    <HowItWorks />
-    <Pricing />
-    <Contact />
-  </main>
-  <Footer />
-</Layout>
+    #network-canvas{position:fixed;inset:0;width:100%;height:100%;z-index:0;pointer-events:none;opacity:0.5}
+
+    .container{position:relative;z-index:1;text-align:center;padding:40px 24px;display:flex;flex-direction:column;align-items:center;gap:32px;max-width:600px}
+
+    .logo{font-size:28px;font-weight:900;letter-spacing:-.04em;background:linear-gradient(135deg,#818cf8,#60a5fa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+
+    .badge{display:inline-flex;align-items:center;gap:8px;background:rgba(99,102,241,.12);border:1px solid rgba(99,102,241,.3);color:#a5b4fc;font-size:12px;font-weight:600;padding:6px 16px;border-radius:20px;letter-spacing:.5px}
+    .dot{width:6px;height:6px;background:#7c7cff;border-radius:50%;animation:pulse 1.5s infinite}
+    @keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(.8)}}
+
+    h1{font-size:clamp(32px,6vw,58px);font-weight:800;line-height:1.1;letter-spacing:-.03em}
+    h1 span{background:linear-gradient(135deg,#818cf8,#60a5fa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+
+    p{color:rgba(255,255,255,.4);font-size:17px;line-height:1.65;max-width:420px}
+
+    .divider{width:60px;height:1px;background:rgba(99,102,241,.3)}
+
+    .cta-text{font-size:15px;color:rgba(255,255,255,.35);font-weight:500}
+
+    .whatsapp-btn{
+      display:inline-flex;align-items:center;gap:12px;
+      background:linear-gradient(135deg,#25d366,#128c7e);
+      color:#fff;text-decoration:none;
+      padding:18px 36px;border-radius:16px;
+      font-size:16px;font-weight:700;line-height:1.35;
+      box-shadow:0 0 50px rgba(37,211,102,.3),0 8px 32px rgba(0,0,0,.4);
+      transition:all .25s;text-align:left;max-width:400px
+    }
+    .whatsapp-btn:hover{transform:translateY(-3px);box-shadow:0 0 70px rgba(37,211,102,.45),0 16px 48px rgba(0,0,0,.5)}
+    .whatsapp-btn svg{flex-shrink:0}
+    .btn-text small{display:block;font-size:12px;font-weight:400;opacity:.75;margin-top:2px}
+  </style>
+</head>
+<body>
+
+<canvas id="network-canvas"></canvas>
+
+<div class="container">
+  <div class="logo">Klimze</div>
+
+  <div class="badge"><span class="dot"></span> En mantenimiento</div>
+
+  <h1>Estamos<br><span>mejorando.</span></h1>
+
+  <p>Volvemos muy pronto con algo mejor. Mientras tanto, si tienes un negocio que quieres automatizar, escríbenos directamente.</p>
+
+  <div class="divider"></div>
+
+  <p class="cta-text">¿Quieres que tu negocio venda aunque no estés?</p>
+
+  <a
+    href="https://wa.me/50765419867?text=Hola%2C%20quiero%20que%20mi%20negocio%20venda%20aunque%20no%20est%C3%A9.%20%C2%BFMe%20puedes%20contar%20m%C3%A1s%3F"
+    class="whatsapp-btn"
+    target="_blank"
+    rel="noopener"
+  >
+    <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor">
+      <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+    </svg>
+    <div class="btn-text">
+      Quiero que mi negocio venda,<br>aunque no esté. Escríbeme.
+      <small>+507 654-19867 · Respuesta inmediata</small>
+    </div>
+  </a>
+</div>
+
+<script>
+(function(){
+  const c=document.getElementById('network-canvas'),ctx=c.getContext('2d');
+  let W,H,nodes=[];
+  const N=60,DIST=160,SPD=0.35;
+  function resize(){W=c.width=innerWidth;H=c.height=innerHeight}
+  function init(){nodes=[];for(let i=0;i<N;i++)nodes.push({x:Math.random()*W,y:Math.random()*H,vx:(Math.random()-.5)*SPD,vy:(Math.random()-.5)*SPD,r:Math.random()*2+1,o:Math.random()*.5+.3})}
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+    for(let i=0;i<nodes.length;i++)for(let j=i+1;j<nodes.length;j++){
+      const dx=nodes[j].x-nodes[i].x,dy=nodes[j].y-nodes[i].y,d=Math.sqrt(dx*dx+dy*dy);
+      if(d<DIST){const a=(1-d/DIST)*.3;ctx.beginPath();ctx.moveTo(nodes[i].x,nodes[i].y);ctx.lineTo(nodes[j].x,nodes[j].y);ctx.strokeStyle=`rgba(99,102,241,${a})`;ctx.lineWidth=.7;ctx.stroke()}
+    }
+    nodes.forEach(n=>{ctx.beginPath();ctx.arc(n.x,n.y,n.r,0,Math.PI*2);ctx.fillStyle=`rgba(180,190,255,${n.o})`;ctx.fill()});
+  }
+  function update(){nodes.forEach(n=>{n.x+=n.vx;n.y+=n.vy;if(n.x<0||n.x>W)n.vx*=-1;if(n.y<0||n.y>H)n.vy*=-1})}
+  function loop(){update();draw();requestAnimationFrame(loop)}
+  addEventListener('resize',()=>{resize();init()});
+  resize();init();loop();
+})();
+</script>
+</body>
+</html>
